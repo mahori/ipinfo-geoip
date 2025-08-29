@@ -1,0 +1,73 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ipinfo-geoip"
+version = "0.0.1"
+description = "IPアドレスからネットワーク，AS番号，国，組織を取得するPythonモジュール"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "mahori", email = "4198737+mahori@users.noreply.github.com"},
+]
+keywords = [
+    "geoip",
+    "ip",
+    "network",
+    "redis",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "geoip2>=5.1.0",
+    "redis>=6.4.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/mahori/ipinfo-geoip"
+Repository = "https://github.com/mahori/ipinfo-geoip"
+Issues = "https://github.com/mahori/ipinfo-geoip/issues"
+
+[dependency-groups]
+dev = [
+    "nox>=2025.5.1",
+    "pytest>=8.4.1",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = [
+    "src/ipinfo_geoip",
+]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/",
+    "tests/",
+    "README.md",
+    "CODE_OF_CONDUCT.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+]
+
+[tool.mypy]
+strict = true
+pretty = true
+
+[tool.ruff]
+line-length = 127
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = ["COM812", "D203", "D213"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["INP001", "S101"]

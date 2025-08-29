@@ -1,0 +1,280 @@
+"""RedisClientクラスのテスト."""
+
+import os
+from collections import UserDict
+from unittest.mock import Mock, patch
+
+import pytest
+import redis
+
+from ipinfo_geoip.exceptions import ConfigurationError, RedisClientError, ValidationError
+from ipinfo_geoip.ipdata import IPData
+from ipinfo_geoip.redis_client import RedisClient, RedisConfig
+
+
+class TestRedisConfig:
+    """RedisConfigクラスのテストクラス."""
+
+    def test_init(self) -> None:
+        """初期化のテスト."""
+        config = RedisConfig("redis://localhost:6379", "3600")
+
+        assert config.uri == "redis://localhost:6379"
+        assert config.ttl == "3600"
+
+    def test_init_with_invalid_uri_type(self) -> None:
+        """無効なURI型のテスト."""
+        with pytest.raises(TypeError):
+            RedisConfig(123, "3600")  # type: ignore[arg-type]  # intを渡す
+
+    @patch.dict(
+        os.environ,
+        {
+            "IPINFO_REDIS_URI": "redis://localhost:6379",
+            "IPINFO_REDIS_CACHE_TTL": "3600",
+        },
+    )
+    def test_from_env(self) -> None:
+        """環境変数からの作成テスト."""
+        config = RedisConfig.from_env()
+
+        assert config.uri == "redis://localhost:6379"
+        assert config.ttl == "3600"
+
+    @patch.dict(
+        os.environ,
+        {
+            "IPINFO_REDIS_CACHE_TTL": "3600",
+        },
+    )
+    def test_from_env_missing_uri(self) -> None:
+        """URI環境変数不足のテスト."""
+        with (
+            patch.dict(os.environ, {}, clear=True),
+            pytest.raises(ValidationError),
+        ):
+            RedisConfig.from_env()
+
+    @patch.dict(
+        os.environ,
+        {
+            "IPINFO_REDIS_CACHE_TTL": "3600",
+        },
+    )
+    def test_from_env_missing_ttl(self) -> None:
+        """TTL環境変数不足のテスト."""
+        with (
+            patch.dict(os.environ, {}, clear=True),
+            pytest.raises(ValidationError),
+        ):
+            RedisConfig.from_env()
+
+
+class TestRedisClient:
+    """RedisClientクラスのテストクラス."""
+
+    @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
+    @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")
+    def test_init(self, mock_from_env: Mock, mock_redis_from_url: Mock) -> None:
+        """初期化のテスト."""
+        # モック設定
+        mock_config = Mock()
+        mock_config.uri = "redis://localhost:6379"
+        mock_config.ttl = "3600"
+        mock_from_env.return_value = mock_config
+
+        mock_redis_instance = Mock()
+        mock_redis_from_url.return_value = mock_redis_instance
+
+        # テスト実行
+        client = RedisClient()
+
+        # 検証
+        mock_from_env.assert_called_once()
+        mock_redis_from_url.assert_called_once_with("redis://localhost:6379", decode_responses=True)
+        assert isinstance(client, UserDict)  # UserDictを継承
+
+    @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")
+    def test_init_with_configuration_error(self, mock_from_env: Mock) -> None:
+        """設定エラーでの初期化テスト."""
+        mock_from_env.side_effect = ValidationError("Missing environment variable")
+
+        with pytest.raises(ConfigurationError):
+            RedisClient()
+
+    @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
+    @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")
+    def test_missing_success(self, mock_from_env: Mock, mock_redis_from_url: Mock) -> None:
+        """成功時の__missing__メソッドテスト."""
+        # モック設定
+        mock_config = Mock()
+        mock_config.ttl = "3600"
+        mock_from_env.return_value = mock_config
+
+        mock_redis_data = {
+            "network": "8.8.8.0/24",
+            "as_number": "15169",
+            "country": "US",
+            "organization": "Google LLC",
+        }
+
+        mock_redis_instance = Mock()
+        mock_redis_instance.hgetall.return_value = mock_redis_data
+        mock_redis_from_url.return_value = mock_redis_instance
+
+        # テスト実行
+        client = RedisClient()
+        result = client["8.8.8.8"]
+
+        # 検証
+        assert isinstance(result, IPData)
+        assert result.ip_address == "8.8.8.8"
+        assert result.network == "8.8.8.0/24"
+        assert result.as_number == "15169"
+        assert result.country == "US"
+        assert result.organization == "Google LLC"
+        mock_redis_instance.hgetall.assert_called_once_with("ipinfo:8.8.8.8")
+
+    @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
+    @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")
+    def test_missing_with_empty_response(self, mock_from_env: Mock, mock_redis_from_url: Mock) -> None:
+        """空のレスポンスでのテスト."""
+        # モック設定
+        mock_config = Mock()
+        mock_config.ttl = "3600"
+        mock_from_env.return_value = mock_config
+
+        mock_redis_instance = Mock()
+        mock_redis_instance.hgetall.return_value = {}  # 空の辞書
+        mock_redis_from_url.return_value = mock_redis_instance
+
+        # テスト実行
+        client = RedisClient()
+        result = client["8.8.8.8"]
+
+        # 検証
+        assert result is None
+
+    @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
+    @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")
+    def test_missing_with_connection_error(self, mock_from_env: Mock, mock_redis_from_url: Mock) -> None:
+        """接続エラーでのテスト."""
+        # モック設定
+        mock_config = Mock()
+        mock_config.ttl = "3600"
+        mock_from_env.return_value = mock_config
+
+        mock_redis_instance = Mock()
+        mock_redis_instance.hgetall.side_effect = redis.ConnectionError("Connection failed")
+        mock_redis_from_url.return_value = mock_redis_instance
+
+        # テスト実行
+        client = RedisClient()
+
+        with pytest.raises(RedisClientError):
+            client["8.8.8.8"]
+
+    @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
+    @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")
+    def test_missing_with_invalid_ip_type(self, mock_from_env: Mock, mock_redis_from_url: Mock) -> None:
+        """無効なIPアドレス型のテスト."""
+        # モック設定
+        mock_config = Mock()
+        mock_config.ttl = "3600"
+        mock_from_env.return_value = mock_config
+
+        mock_redis_instance = Mock()
+        mock_redis_from_url.return_value = mock_redis_instance
+
+        client = RedisClient()
+
+        with pytest.raises(TypeError):
+            _ = client[123]  # type: ignore[index]  # 数値を渡す
+
+    @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
+    @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")
+    def test_setitem_success(self, mock_from_env: Mock, mock_redis_from_url: Mock) -> None:
+        """成功時の__setitem__メソッドテスト."""
+        # モック設定
+        mock_config = Mock()
+        mock_config.ttl = "3600"
+        mock_from_env.return_value = mock_config
+
+        mock_redis_instance = Mock()
+        mock_redis_from_url.return_value = mock_redis_instance
+
+        # テストデータ
+        ip_address = "8.8.8.8"
+        ip_data = IPData(
+            ip_address=ip_address, network="8.8.8.0/24", as_number="15169", country="US", organization="Google LLC"
+        )
+
+        # テスト実行
+        client = RedisClient()
+        client[ip_address] = ip_data
+
+        # 検証
+        expected_mapping = {
+            "ip_address": "8.8.8.8",
+            "network": "8.8.8.0/24",
+            "as_number": "15169",
+            "country": "US",
+            "organization": "Google LLC",
+        }
+        mock_redis_instance.hset.assert_called_once_with("ipinfo:8.8.8.8", mapping=expected_mapping)
+        mock_redis_instance.expire.assert_called_once_with("ipinfo:8.8.8.8", 3600)
+
+    @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
+    @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")
+    def test_setitem_with_invalid_ip_type(self, mock_from_env: Mock, mock_redis_from_url: Mock) -> None:
+        """無効なIPアドレス型での__setitem__テスト."""
+        # モック設定
+        mock_config = Mock()
+        mock_config.ttl = "3600"
+        mock_from_env.return_value = mock_config
+
+        mock_redis_instance = Mock()
+        mock_redis_from_url.return_value = mock_redis_instance
+
+        client = RedisClient()
+        ip_data = IPData("8.8.8.8", "8.8.8.0/24", "15169", "US", "Google LLC")
+
+        with pytest.raises(TypeError):
+            client[123] = ip_data  # type: ignore[index]  # 数値キーを渡す
+
+    @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
+    @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")
+    def test_setitem_with_invalid_data_type(self, mock_from_env: Mock, mock_redis_from_url: Mock) -> None:
+        """無効なデータ型での__setitem__テスト."""
+        # モック設定
+        mock_config = Mock()
+        mock_config.ttl = "3600"
+        mock_from_env.return_value = mock_config
+
+        mock_redis_instance = Mock()
+        mock_redis_from_url.return_value = mock_redis_instance
+
+        client = RedisClient()
+
+        with pytest.raises(TypeError):
+            client["8.8.8.8"] = "invalid_data"  # type: ignore[assignment]  # 文字列を渡す
+
+    @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
+    @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")
+    def test_redis_key_format(self, mock_from_env: Mock, mock_redis_from_url: Mock) -> None:
+        """Redisキー形式のテスト."""
+        # モック設定
+        mock_config = Mock()
+        mock_config.ttl = "3600"
+        mock_from_env.return_value = mock_config
+
+        mock_redis_instance = Mock()
+        mock_redis_instance.hgetall.return_value = {}
+        mock_redis_from_url.return_value = mock_redis_instance
+
+        # テスト実行
+        client = RedisClient()
+        client["192.168.1.1"]
+
+        # キー形式の検証
+        mock_redis_instance.hgetall.assert_called_once_with("ipinfo:192.168.1.1")

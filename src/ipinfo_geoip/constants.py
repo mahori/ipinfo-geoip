@@ -1,0 +1,10 @@
+"""定数定義."""
+
+from typing import Final
+
+# 環境変数名
+GEOIP_ACCOUNT_ID_ENV: Final[str] = "IPINFO_GEOIP_ACCOUNT_ID"
+GEOIP_LICENSE_KEY_ENV: Final[str] = "IPINFO_GEOIP_LICENSE_KEY"
+GEOIP_HOST_ENV: Final[str] = "IPINFO_GEOIP_HOST"
+REDIS_URI_ENV: Final[str] = "IPINFO_REDIS_URI"
+REDIS_CACHE_TTL_ENV: Final[str] = "IPINFO_REDIS_CACHE_TTL"
