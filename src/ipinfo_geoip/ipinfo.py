@@ -13,8 +13,8 @@ class IPInfo(UserDict[str, dict[str, str] | None]):
         """IPInfoを初期化する."""
         super().__init__()
 
-        self.redis = RedisClient()
         self.geoip = GeoIPClient()
+        self.redis = RedisClient()
 
     def __missing__(self, ip_address: str) -> dict[str, str] | None:
         """指定されたIPアドレス情報を取得する.
