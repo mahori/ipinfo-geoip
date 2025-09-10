@@ -9,7 +9,7 @@
 
 IPアドレスからネットワーク，AS番号，国，組織を取得するPythonパッケージ
 
-MaxMind社のGeoLite Web Serviceを使用してIPアドレス情報を取得し，Redisでキャッシュ機能を提供します．
+MaxMind社GeoLite Web Serviceを使用してIPアドレス情報を取得し，Redisでキャッシュ機能を提供します．
 
 ## 特徴
 
@@ -160,4 +160,4 @@ uvx nox -s build
 
 ## サポート
 
-- [GitHub Issues](https://github.com/mahori/ipinfo-geoip/issues) - バグ報告・機能要望
+[GitHub Issues](https://github.com/mahori/ipinfo-geoip/issues) - バグ報告・機能要望
