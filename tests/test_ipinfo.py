@@ -18,7 +18,7 @@ class TestIPInfo:
         """初期化のテスト."""
         ipinfo = IPInfo()
 
-        assert isinstance(ipinfo, UserDict)  # UserDictを継承
+        assert isinstance(ipinfo, UserDict)
         mock_redis_client.assert_called_once()
         mock_geoip_client.assert_called_once()
 
@@ -148,10 +148,10 @@ class TestIPInfo:
         ip_address = "192.168.1.1"
         incomplete_ip_data = IPData(
             ip_address=ip_address,
-            network="",  # 空のネットワーク
-            as_number="",  # 空のAS番号
-            country="",  # 空の国コード
-            organization="",  # 空の組織名
+            network="",
+            as_number="",
+            country="",
+            organization="",
         )
 
         # Redisクライアントのモック設定
@@ -216,8 +216,8 @@ class TestIPInfo:
     @patch("ipinfo_geoip.ipinfo.GeoIPClient")
     def test_missing_with_invalid_ip_type(self, mock_geoip_client: Mock, mock_redis_client: Mock) -> None:
         """無効なIPアドレス型のテスト."""
-        del mock_geoip_client, mock_redis_client  # モックは不要だが装飾のために必要
+        del mock_geoip_client, mock_redis_client
         ipinfo = IPInfo()
 
         with pytest.raises(TypeError):
-            _ = ipinfo[123]  # type: ignore[index]  # 数値を渡す
+            _ = ipinfo[123]  # type: ignore[index]

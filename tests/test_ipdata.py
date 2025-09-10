@@ -34,7 +34,7 @@ class TestIPData:
         """空のネットワークでのis_completeテスト."""
         ip_data = IPData(
             ip_address="192.168.1.1",
-            network="",  # 空
+            network="",
             as_number="15169",
             country="US",
             organization="Google LLC",
@@ -47,7 +47,7 @@ class TestIPData:
         ip_data = IPData(
             ip_address="192.168.1.1",
             network="192.168.1.0/24",
-            as_number="",  # 空
+            as_number="",
             country="US",
             organization="Google LLC",
         )
@@ -60,7 +60,7 @@ class TestIPData:
             ip_address="192.168.1.1",
             network="192.168.1.0/24",
             as_number="15169",
-            country="",  # 空
+            country="",
             organization="Google LLC",
         )
 
@@ -73,7 +73,7 @@ class TestIPData:
             network="192.168.1.0/24",
             as_number="15169",
             country="US",
-            organization="",  # 空
+            organization="",
         )
 
         assert ip_data.is_complete() is False
@@ -139,7 +139,7 @@ class TestIPData:
         )
 
         ip_data2 = IPData(
-            ip_address="8.8.4.4",  # 異なるIP
+            ip_address="8.8.4.4",
             network="8.8.8.0/24",
             as_number="15169",
             country="US",

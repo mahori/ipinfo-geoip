@@ -25,7 +25,7 @@ class TestRedisConfig:
     def test_init_with_invalid_uri_type(self) -> None:
         """無効なURI型のテスト."""
         with pytest.raises(TypeError):
-            RedisConfig(123, "3600")  # type: ignore[arg-type]  # intを渡す
+            RedisConfig(123, "3600")  # type: ignore[arg-type]
 
     @patch.dict(
         os.environ,
@@ -33,6 +33,7 @@ class TestRedisConfig:
             "IPINFO_REDIS_URI": "redis://localhost:6379",
             "IPINFO_REDIS_CACHE_TTL": "3600",
         },
+        clear=True,
     )
     def test_from_env(self) -> None:
         """環境変数からの作成テスト."""
@@ -46,27 +47,23 @@ class TestRedisConfig:
         {
             "IPINFO_REDIS_CACHE_TTL": "3600",
         },
+        clear=True,
     )
     def test_from_env_missing_uri(self) -> None:
         """URI環境変数不足のテスト."""
-        with (
-            patch.dict(os.environ, {}, clear=True),
-            pytest.raises(ValidationError),
-        ):
+        with pytest.raises(ValidationError):
             RedisConfig.from_env()
 
     @patch.dict(
         os.environ,
         {
-            "IPINFO_REDIS_CACHE_TTL": "3600",
+            "IPINFO_REDIS_URI": "redis://localhost:6379",
         },
+        clear=True,
     )
     def test_from_env_missing_ttl(self) -> None:
         """TTL環境変数不足のテスト."""
-        with (
-            patch.dict(os.environ, {}, clear=True),
-            pytest.raises(ValidationError),
-        ):
+        with pytest.raises(ValidationError):
             RedisConfig.from_env()
 
 
@@ -92,7 +89,7 @@ class TestRedisClient:
         # 検証
         mock_from_env.assert_called_once()
         mock_redis_from_url.assert_called_once_with("redis://localhost:6379", decode_responses=True)
-        assert isinstance(client, UserDict)  # UserDictを継承
+        assert isinstance(client, UserDict)
 
     @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")
     def test_init_with_configuration_error(self, mock_from_env: Mock) -> None:
@@ -145,7 +142,7 @@ class TestRedisClient:
         mock_from_env.return_value = mock_config
 
         mock_redis_instance = Mock()
-        mock_redis_instance.hgetall.return_value = {}  # 空の辞書
+        mock_redis_instance.hgetall.return_value = {}
         mock_redis_from_url.return_value = mock_redis_instance
 
         # テスト実行
@@ -189,7 +186,7 @@ class TestRedisClient:
         client = RedisClient()
 
         with pytest.raises(TypeError):
-            _ = client[123]  # type: ignore[index]  # 数値を渡す
+            _ = client[123]  # type: ignore[index]
 
     @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
     @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")
@@ -240,7 +237,7 @@ class TestRedisClient:
         ip_data = IPData("8.8.8.8", "8.8.8.0/24", "15169", "US", "Google LLC")
 
         with pytest.raises(TypeError):
-            client[123] = ip_data  # type: ignore[index]  # 数値キーを渡す
+            client[123] = ip_data  # type: ignore[index]
 
     @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
     @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")
@@ -257,7 +254,7 @@ class TestRedisClient:
         client = RedisClient()
 
         with pytest.raises(TypeError):
-            client["8.8.8.8"] = "invalid_data"  # type: ignore[assignment]  # 文字列を渡す
+            client["8.8.8.8"] = "invalid_data"  # type: ignore[assignment]
 
     @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
     @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")

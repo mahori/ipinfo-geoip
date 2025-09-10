@@ -44,9 +44,9 @@ class TestToStr:
     def test_to_str_with_bool(self) -> None:
         """ブール値の場合のテスト."""
         with pytest.raises(TypeError):
-            _to_str(bool(1))  # True
+            _to_str(bool(1))
         with pytest.raises(TypeError):
-            _to_str(bool(0))  # False
+            _to_str(bool(0))
 
     def test_to_str_with_unsupported_type(self) -> None:
         """サポートされていない型の場合のテスト."""
@@ -64,24 +64,24 @@ class TestGeoIPConfig:
         config = GeoIPConfig("12345", "license_key", "geoip.maxmind.com")
 
         expected_id = 12345
-        assert config.account_id == expected_id  # intに変換される
+        assert config.account_id == expected_id
         assert config.license_key == "license_key"
         assert config.host == "geoip.maxmind.com"
 
     def test_init_with_invalid_account_id_type(self) -> None:
         """無効なアカウントID型のテスト."""
         with pytest.raises(TypeError):
-            GeoIPConfig(12345, "license_key", "host")  # type: ignore[arg-type]  # intを渡す
+            GeoIPConfig(12345, "license_key", "host")  # type: ignore[arg-type]
 
     def test_init_with_invalid_license_key_type(self) -> None:
         """無効なライセンスキー型のテスト."""
         with pytest.raises(TypeError):
-            GeoIPConfig("12345", 123, "host")  # type: ignore[arg-type]  # intを渡す
+            GeoIPConfig("12345", 123, "host")  # type: ignore[arg-type]
 
     def test_init_with_invalid_host_type(self) -> None:
         """無効なホスト型のテスト."""
         with pytest.raises(TypeError):
-            GeoIPConfig("12345", "license_key", 123)  # type: ignore[arg-type]  # intを渡す
+            GeoIPConfig("12345", "license_key", 123)  # type: ignore[arg-type]
 
     @patch.dict(
         os.environ,
@@ -90,6 +90,7 @@ class TestGeoIPConfig:
             "IPINFO_GEOIP_LICENSE_KEY": "test_key",
             "IPINFO_GEOIP_HOST": "geoip.maxmind.com",
         },
+        clear=True,
     )
     def test_from_env(self) -> None:
         """環境変数からの作成テスト."""
@@ -106,13 +107,11 @@ class TestGeoIPConfig:
             "IPINFO_GEOIP_LICENSE_KEY": "test_key",
             "IPINFO_GEOIP_HOST": "geoip.maxmind.com",
         },
+        clear=True,
     )
     def test_from_env_missing_account_id(self) -> None:
         """アカウントID環境変数不足のテスト."""
-        with (
-            patch.dict(os.environ, {}, clear=True),
-            pytest.raises(ValidationError),
-        ):
+        with pytest.raises(ValidationError):
             GeoIPConfig.from_env()
 
     @patch.dict(
@@ -121,13 +120,11 @@ class TestGeoIPConfig:
             "IPINFO_GEOIP_ACCOUNT_ID": "12345",
             "IPINFO_GEOIP_HOST": "geoip.maxmind.com",
         },
+        clear=True,
     )
     def test_from_env_missing_license_key(self) -> None:
         """ライセンスキー環境変数不足のテスト."""
-        with (
-            patch.dict(os.environ, {}, clear=True),
-            pytest.raises(ValidationError),
-        ):
+        with pytest.raises(ValidationError):
             GeoIPConfig.from_env()
 
     @patch.dict(
@@ -136,13 +133,11 @@ class TestGeoIPConfig:
             "IPINFO_GEOIP_ACCOUNT_ID": "12345",
             "IPINFO_GEOIP_LICENSE_KEY": "test_key",
         },
+        clear=True,
     )
     def test_from_env_missing_host(self) -> None:
         """ホスト環境変数不足のテスト."""
-        with (
-            patch.dict(os.environ, {}, clear=True),
-            pytest.raises(ValidationError),
-        ):
+        with pytest.raises(ValidationError):
             GeoIPConfig.from_env()
 
 
@@ -167,7 +162,7 @@ class TestGeoIPClient:
         # 検証
         mock_from_env.assert_called_once()
         mock_client.assert_called_once_with(expected_id, "test_key", "geoip.maxmind.com")
-        assert isinstance(client, UserDict)  # UserDictを継承
+        assert isinstance(client, UserDict)
 
     @patch("ipinfo_geoip.geoip_client.GeoIPConfig.from_env")
     def test_init_with_configuration_error(self, mock_from_env: Mock) -> None:
@@ -251,7 +246,7 @@ class TestGeoIPClient:
             client = GeoIPClient()
 
             with pytest.raises(TypeError):
-                _ = client[123]  # type: ignore[index]  # 数値を渡す
+                _ = client[123]  # type: ignore[index]
 
     @patch("ipinfo_geoip.geoip_client.geoip2.webservice.Client")
     @patch("ipinfo_geoip.geoip_client.GeoIPConfig.from_env")
@@ -262,8 +257,8 @@ class TestGeoIPClient:
         mock_from_env.return_value = mock_config
 
         mock_response = Mock()
-        mock_response.traits.network = None  # None
-        mock_response.traits.autonomous_system_number = None  # None
+        mock_response.traits.network = None
+        mock_response.traits.autonomous_system_number = None
         mock_response.country.iso_code = "US"
         mock_response.traits.autonomous_system_organization = "Google LLC"
 
@@ -277,5 +272,5 @@ class TestGeoIPClient:
 
         # 検証
         assert isinstance(result, IPData)
-        assert result.network == ""  # Noneは空文字列に変換
-        assert result.as_number == ""  # Noneは空文字列に変換
+        assert result.network == ""
+        assert result.as_number == ""
