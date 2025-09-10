@@ -32,13 +32,5 @@ class ConfigurationError(IPInfoError):
     """設定関連のエラー."""
 
 
-class NetworkError(IPInfoError):
-    """ネットワーク関連のエラー."""
-
-
-class CacheError(IPInfoError):
-    """キャッシュ関連のエラー."""
-
-
 class ValidationError(IPInfoError):
     """データ検証関連のエラー."""

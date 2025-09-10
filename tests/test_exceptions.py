@@ -3,11 +3,9 @@
 import pytest
 
 from ipinfo_geoip.exceptions import (
-    CacheError,
     ConfigurationError,
     GeoIPClientError,
     IPInfoError,
-    NetworkError,
     RedisClientError,
     ValidationError,
 )
@@ -59,18 +57,6 @@ class TestSpecificErrors:
         assert isinstance(error, IPInfoError)
         assert isinstance(error, Exception)
 
-    def test_network_error_inheritance(self) -> None:
-        """NetworkErrorの継承テスト."""
-        error = NetworkError("ネットワークエラー")
-        assert isinstance(error, IPInfoError)
-        assert isinstance(error, Exception)
-
-    def test_cache_error_inheritance(self) -> None:
-        """CacheErrorの継承テスト."""
-        error = CacheError("キャッシュエラー")
-        assert isinstance(error, IPInfoError)
-        assert isinstance(error, Exception)
-
     def test_validation_error_inheritance(self) -> None:
         """ValidationErrorの継承テスト."""
         error = ValidationError("検証エラー")
@@ -89,8 +75,6 @@ class TestErrorDetails:
             GeoIPClientError("test", details),
             RedisClientError("test", details),
             ConfigurationError("test", details),
-            NetworkError("test", details),
-            CacheError("test", details),
             ValidationError("test", details),
         ]
 
