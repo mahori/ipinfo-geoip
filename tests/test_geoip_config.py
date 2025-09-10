@@ -6,7 +6,7 @@ from unittest.mock import patch
 import pytest
 
 from ipinfo_geoip.exceptions import ValidationError
-from ipinfo_geoip.geoip_client import GeoIPConfig
+from ipinfo_geoip.geoip_config import GeoIPConfig
 
 
 class TestGeoIPConfig:
