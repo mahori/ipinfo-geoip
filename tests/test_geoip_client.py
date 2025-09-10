@@ -55,7 +55,7 @@ class TestGeoIPClient:
         mock_response.traits.network = IPv4Network("8.8.8.0/24")
         mock_response.traits.autonomous_system_number = 15169
         mock_response.country.iso_code = "US"
-        mock_response.traits.autonomous_system_organization = "Google LLC"
+        mock_response.traits.autonomous_system_organization = "GOOGLE"
 
         mock_client_instance = Mock()
         mock_client_instance.city.return_value = mock_response
@@ -71,7 +71,7 @@ class TestGeoIPClient:
         assert result.network == "8.8.8.0/24"
         assert result.as_number == "15169"
         assert result.country == "US"
-        assert result.organization == "Google LLC"
+        assert result.organization == "GOOGLE"
         mock_client_instance.city.assert_called_once_with("8.8.8.8")
 
     @patch("ipinfo_geoip.geoip_client.geoip2.webservice.Client")
@@ -131,7 +131,7 @@ class TestGeoIPClient:
         mock_response.traits.network = None
         mock_response.traits.autonomous_system_number = None
         mock_response.country.iso_code = "US"
-        mock_response.traits.autonomous_system_organization = "Google LLC"
+        mock_response.traits.autonomous_system_organization = "GOOGLE"
 
         mock_client_instance = Mock()
         mock_client_instance.city.return_value = mock_response

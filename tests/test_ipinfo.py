@@ -33,7 +33,7 @@ class TestIPInfo:
             network="8.8.8.0/24",
             as_number="15169",
             country="US",
-            organization="Google LLC",
+            organization="GOOGLE",
         )
 
         # Redisクライアントのモック設定
@@ -72,7 +72,7 @@ class TestIPInfo:
             network="8.8.8.0/24",
             as_number="15169",
             country="US",
-            organization="Google LLC",
+            organization="GOOGLE",
         )
 
         # Redisクライアントのモック設定
@@ -111,7 +111,7 @@ class TestIPInfo:
             network="8.8.8.0/24",
             as_number="15169",
             country="US",
-            organization="Google LLC",
+            organization="GOOGLE",
         )
 
         # Redisクライアントのモック設定

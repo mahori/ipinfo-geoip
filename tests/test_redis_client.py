@@ -56,7 +56,7 @@ class TestRedisClient:
             "network": "8.8.8.0/24",
             "as_number": "15169",
             "country": "US",
-            "organization": "Google LLC",
+            "organization": "GOOGLE",
         }
 
         mock_redis_instance = Mock()
@@ -73,7 +73,7 @@ class TestRedisClient:
         assert result.network == "8.8.8.0/24"
         assert result.as_number == "15169"
         assert result.country == "US"
-        assert result.organization == "Google LLC"
+        assert result.organization == "GOOGLE"
         mock_redis_instance.hgetall.assert_called_once_with("ipinfo:8.8.8.8")
 
     @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
@@ -147,7 +147,11 @@ class TestRedisClient:
         # テストデータ
         ip_address = "8.8.8.8"
         ip_data = IPData(
-            ip_address=ip_address, network="8.8.8.0/24", as_number="15169", country="US", organization="Google LLC"
+            ip_address=ip_address,
+            network="8.8.8.0/24",
+            as_number="15169",
+            country="US",
+            organization="GOOGLE",
         )
 
         # テスト実行
@@ -160,7 +164,7 @@ class TestRedisClient:
             "network": "8.8.8.0/24",
             "as_number": "15169",
             "country": "US",
-            "organization": "Google LLC",
+            "organization": "GOOGLE",
         }
         mock_redis_instance.hset.assert_called_once_with("ipinfo:8.8.8.8", mapping=expected_mapping)
         mock_redis_instance.expire.assert_called_once_with("ipinfo:8.8.8.8", 3600)
@@ -178,7 +182,13 @@ class TestRedisClient:
         mock_redis_from_url.return_value = mock_redis_instance
 
         client = RedisClient()
-        ip_data = IPData("8.8.8.8", "8.8.8.0/24", "15169", "US", "Google LLC")
+        ip_data = IPData(
+            "8.8.8.8",
+            "8.8.8.0/24",
+            "15169",
+            "US",
+            "GOOGLE",
+        )
 
         with pytest.raises(TypeError):
             client[123] = ip_data  # type: ignore[index]

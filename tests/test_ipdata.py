@@ -13,19 +13,24 @@ class TestIPData:
             network="8.8.8.0/24",
             as_number="15169",
             country="US",
-            organization="Google LLC",
+            organization="GOOGLE",
         )
 
+        assert isinstance(ip_data, IPData)
         assert ip_data.ip_address == "8.8.8.8"
         assert ip_data.network == "8.8.8.0/24"
         assert ip_data.as_number == "15169"
         assert ip_data.country == "US"
-        assert ip_data.organization == "Google LLC"
+        assert ip_data.organization == "GOOGLE"
 
     def test_is_complete_with_complete_data(self) -> None:
         """完全なデータでのis_completeテスト."""
         ip_data = IPData(
-            ip_address="8.8.8.8", network="8.8.8.0/24", as_number="15169", country="US", organization="Google LLC"
+            ip_address="8.8.8.8",
+            network="8.8.8.0/24",
+            as_number="15169",
+            country="US",
+            organization="GOOGLE",
         )
 
         assert ip_data.is_complete() is True
@@ -37,7 +42,7 @@ class TestIPData:
             network="",
             as_number="15169",
             country="US",
-            organization="Google LLC",
+            organization="GOOGLE",
         )
 
         assert ip_data.is_complete() is False
@@ -49,7 +54,7 @@ class TestIPData:
             network="192.168.1.0/24",
             as_number="",
             country="US",
-            organization="Google LLC",
+            organization="GOOGLE",
         )
 
         assert ip_data.is_complete() is False
@@ -61,7 +66,7 @@ class TestIPData:
             network="192.168.1.0/24",
             as_number="15169",
             country="",
-            organization="Google LLC",
+            organization="GOOGLE",
         )
 
         assert ip_data.is_complete() is False
@@ -80,14 +85,24 @@ class TestIPData:
 
     def test_is_complete_with_all_empty(self) -> None:
         """すべて空でのis_completeテスト."""
-        ip_data = IPData(ip_address="invalid", network="", as_number="", country="", organization="")
+        ip_data = IPData(
+            ip_address="invalid.ip",
+            network="",
+            as_number="",
+            country="",
+            organization="",
+        )
 
         assert ip_data.is_complete() is False
 
     def test_to_dict(self) -> None:
         """to_dictメソッドのテスト."""
         ip_data = IPData(
-            ip_address="8.8.8.8", network="8.8.8.0/24", as_number="15169", country="US", organization="Google LLC"
+            ip_address="8.8.8.8",
+            network="8.8.8.0/24",
+            as_number="15169",
+            country="US",
+            organization="GOOGLE",
         )
 
         expected = {
@@ -95,16 +110,28 @@ class TestIPData:
             "network": "8.8.8.0/24",
             "as_number": "15169",
             "country": "US",
-            "organization": "Google LLC",
+            "organization": "GOOGLE",
         }
 
         assert ip_data.to_dict() == expected
 
     def test_to_dict_with_empty_values(self) -> None:
         """空の値を含むto_dictメソッドのテスト."""
-        ip_data = IPData(ip_address="192.168.1.1", network="", as_number="", country="", organization="")
+        ip_data = IPData(
+            ip_address="192.168.1.1",
+            network="",
+            as_number="",
+            country="",
+            organization="",
+        )
 
-        expected = {"ip_address": "192.168.1.1", "network": "", "as_number": "", "country": "", "organization": ""}
+        expected = {
+            "ip_address": "192.168.1.1",
+            "network": "",
+            "as_number": "",
+            "country": "",
+            "organization": "",
+        }
 
         assert ip_data.to_dict() == expected
 
@@ -115,7 +142,7 @@ class TestIPData:
             network="8.8.8.0/24",
             as_number="15169",
             country="US",
-            organization="Google LLC",
+            organization="GOOGLE",
         )
 
         ip_data2 = IPData(
@@ -123,7 +150,7 @@ class TestIPData:
             network="8.8.8.0/24",
             as_number="15169",
             country="US",
-            organization="Google LLC",
+            organization="GOOGLE",
         )
 
         assert ip_data1 == ip_data2
@@ -135,7 +162,7 @@ class TestIPData:
             network="8.8.8.0/24",
             as_number="15169",
             country="US",
-            organization="Google LLC",
+            organization="GOOGLE",
         )
 
         ip_data2 = IPData(
@@ -143,7 +170,7 @@ class TestIPData:
             network="8.8.8.0/24",
             as_number="15169",
             country="US",
-            organization="Google LLC",
+            organization="GOOGLE",
         )
 
         assert ip_data1 != ip_data2
@@ -155,11 +182,13 @@ class TestIPData:
             network="8.8.8.0/24",
             as_number="15169",
             country="US",
-            organization="Google LLC",
+            organization="GOOGLE",
         )
 
         repr_str = repr(ip_data)
         assert "IPData" in repr_str
         assert "8.8.8.8" in repr_str
+        assert "8.8.8.0/24" in repr_str
         assert "15169" in repr_str
-        assert "Google LLC" in repr_str
+        assert "US" in repr_str
+        assert "GOOGLE" in repr_str
