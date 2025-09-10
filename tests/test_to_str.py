@@ -4,7 +4,7 @@ from ipaddress import IPv4Network, IPv6Network
 
 import pytest
 
-from ipinfo_geoip.geoip_client import _to_str
+from ipinfo_geoip.to_str import _to_str
 
 
 class TestToStr:
