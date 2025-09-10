@@ -16,8 +16,9 @@ class TestRedisConfig:
         """初期化のテスト."""
         config = RedisConfig("redis://localhost:6379", "3600")
 
+        expected_ttl = 3600
         assert config.uri == "redis://localhost:6379"
-        assert config.ttl == "3600"
+        assert config.ttl == expected_ttl
 
     def test_init_with_invalid_uri_type(self) -> None:
         """無効なURI型のテスト."""
@@ -36,8 +37,9 @@ class TestRedisConfig:
         """環境変数からの作成テスト."""
         config = RedisConfig.from_env()
 
+        expected_ttl = 3600
         assert config.uri == "redis://localhost:6379"
-        assert config.ttl == "3600"
+        assert config.ttl == expected_ttl
 
     @patch.dict(
         os.environ,

@@ -21,7 +21,7 @@ class TestRedisClient:
         # モック設定
         mock_config = Mock()
         mock_config.uri = "redis://localhost:6379"
-        mock_config.ttl = "3600"
+        mock_config.ttl = 3600
         mock_from_env.return_value = mock_config
 
         mock_redis_instance = Mock()
@@ -49,7 +49,7 @@ class TestRedisClient:
         """成功時の__missing__メソッドテスト."""
         # モック設定
         mock_config = Mock()
-        mock_config.ttl = "3600"
+        mock_config.ttl = 3600
         mock_from_env.return_value = mock_config
 
         mock_redis_data = {
@@ -82,7 +82,7 @@ class TestRedisClient:
         """空のレスポンスでのテスト."""
         # モック設定
         mock_config = Mock()
-        mock_config.ttl = "3600"
+        mock_config.ttl = 3600
         mock_from_env.return_value = mock_config
 
         mock_redis_instance = Mock()
@@ -102,7 +102,7 @@ class TestRedisClient:
         """接続エラーでのテスト."""
         # モック設定
         mock_config = Mock()
-        mock_config.ttl = "3600"
+        mock_config.ttl = 3600
         mock_from_env.return_value = mock_config
 
         mock_redis_instance = Mock()
@@ -121,7 +121,7 @@ class TestRedisClient:
         """無効なIPアドレス型のテスト."""
         # モック設定
         mock_config = Mock()
-        mock_config.ttl = "3600"
+        mock_config.ttl = 3600
         mock_from_env.return_value = mock_config
 
         mock_redis_instance = Mock()
@@ -138,7 +138,7 @@ class TestRedisClient:
         """成功時の__setitem__メソッドテスト."""
         # モック設定
         mock_config = Mock()
-        mock_config.ttl = "3600"
+        mock_config.ttl = 3600
         mock_from_env.return_value = mock_config
 
         mock_redis_instance = Mock()
@@ -175,7 +175,7 @@ class TestRedisClient:
         """無効なIPアドレス型での__setitem__テスト."""
         # モック設定
         mock_config = Mock()
-        mock_config.ttl = "3600"
+        mock_config.ttl = 3600
         mock_from_env.return_value = mock_config
 
         mock_redis_instance = Mock()
@@ -199,7 +199,7 @@ class TestRedisClient:
         """無効なデータ型での__setitem__テスト."""
         # モック設定
         mock_config = Mock()
-        mock_config.ttl = "3600"
+        mock_config.ttl = 3600
         mock_from_env.return_value = mock_config
 
         mock_redis_instance = Mock()
@@ -216,7 +216,7 @@ class TestRedisClient:
         """Redisキー形式のテスト."""
         # モック設定
         mock_config = Mock()
-        mock_config.ttl = "3600"
+        mock_config.ttl = 3600
         mock_from_env.return_value = mock_config
 
         mock_redis_instance = Mock()

@@ -30,7 +30,7 @@ class RedisConfig:
             raise TypeError
 
         self.uri = uri
-        self.ttl = ttl
+        self.ttl = int(ttl)
 
     @classmethod
     def from_env(cls) -> Self:

@@ -28,7 +28,7 @@ class RedisClient(UserDict[str, IPData | None]):
             msg = "Redis configuration error"
             raise ConfigurationError(msg, {"error": str(e)}) from e
         self.client = redis.Redis.from_url(config.uri, decode_responses=True)
-        self.ttl = int(config.ttl)
+        self.ttl = config.ttl
 
     def __missing__(self, ip_address: str) -> IPData | None:
         """RedisからIPアドレス情報を取得する.
