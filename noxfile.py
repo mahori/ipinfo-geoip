@@ -58,7 +58,7 @@ def pytest(session: nox.Session) -> None:
         session: Noxセッション
 
     """
-    session.install(".", "pytest", "pytest-asyncio")
+    session.install(".", "pytest")
     session.run("pytest", "-v", *session.posargs)
 
 
@@ -70,7 +70,7 @@ def pytest_coverage(session: nox.Session) -> None:
         session: Noxセッション
 
     """
-    session.install(".", "pytest", "pytest-asyncio", "pytest-cov")
+    session.install(".", "pytest", "pytest-cov")
     session.run(
         "pytest",
         "-v",
@@ -103,13 +103,13 @@ def clean(_session: nox.Session) -> None:
         session: Noxセッション
 
     """
-    directories_to_remove = ["dist", "build", ".mypy_cache", ".nox", ".pytest_cache", ".ruff_cache", ".venv"]
-    for directory in directories_to_remove:
-        dir_path = Path(directory)
-        if dir_path.exists() and dir_path.is_dir():
-            shutil.rmtree(dir_path)
-    files_to_remove = [".coverage", "coverage.xml"]
-    for file in files_to_remove:
+    directories = ["build", "dist", ".mypy_cache", ".nox", ".pytest_cache", ".ruff_cache", ".venv"]
+    for directory in directories:
+        directory_path = Path(directory)
+        if directory_path.exists() and directory_path.is_dir():
+            shutil.rmtree(directory_path)
+    files = [".coverage", "coverage.xml"]
+    for file in files:
         file_path = Path(file)
         if file_path.exists() and file_path.is_file():
             file_path.unlink()
