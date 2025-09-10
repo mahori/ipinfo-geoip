@@ -6,7 +6,7 @@ from unittest.mock import patch
 import pytest
 
 from ipinfo_geoip.exceptions import ValidationError
-from ipinfo_geoip.redis_client import RedisConfig
+from ipinfo_geoip.redis_config import RedisConfig
 
 
 class TestRedisConfig:
