@@ -1,4 +1,4 @@
-"""MaxMind GeoLite2 Web Serviceの設定."""
+"""GeoLite2 Web Service接続設定."""
 
 import os
 from typing import Self
@@ -8,7 +8,7 @@ from .exceptions import ValidationError
 
 
 class GeoIPConfig:
-    """MaxMind GeoLite2 Web Serviceの設定クラス.
+    """GeoLite2 Web Service接続設定クラス.
 
     Attributes:
         account_id: アカウントID
@@ -18,7 +18,7 @@ class GeoIPConfig:
     """
 
     def __init__(self, account_id: str, license_key: str, host: str) -> None:
-        """GeoIP設定を初期化する.
+        """GeoLite2 Web Service設定を初期化する.
 
         Args:
             account_id: アカウントID
@@ -42,7 +42,7 @@ class GeoIPConfig:
 
     @classmethod
     def from_env(cls) -> Self:
-        """環境変数からGeoIP設定を作成する.
+        """環境変数からGeoLite2 Web Service設定を作成する.
 
         Returns:
             環境変数から作成されたGeoIPConfig

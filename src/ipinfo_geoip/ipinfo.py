@@ -1,4 +1,4 @@
-"""IPアドレスからGeoIP情報を取得するメインクラス."""
+"""IPアドレスからネットワーク, AS番号, 国, 組織を取得するメインクラス."""
 
 from collections import UserDict
 
@@ -7,7 +7,7 @@ from .redis_client import RedisClient
 
 
 class IPInfo(UserDict[str, dict[str, str] | None]):
-    """IPアドレスからGeoIP情報を取得するメインクラス."""
+    """IPアドレスからネットワーク, AS番号, 国, 組織を取得するメインクラス."""
 
     def __init__(self) -> None:
         """IPInfoを初期化する."""
@@ -17,17 +17,17 @@ class IPInfo(UserDict[str, dict[str, str] | None]):
         self.geoip = GeoIPClient()
 
     def __missing__(self, ip_address: str) -> dict[str, str] | None:
-        """指定されたIPアドレスの情報を取得する.
+        """指定されたIPアドレス情報を取得する.
 
-        Redisキャッシュから検索する
-        見つからなければGeoIPサービスから取得する
-        GeoIPから取得した完全なデータはRedisにキャッシュされる
+        Redisからキャッシュを検索する
+        見つからなければGeoLite2 Web Serviceから取得する
+        取得したデータに不備がなければRedisにキャッシュされる
 
         Args:
             ip_address: 検索するIPアドレス
 
         Returns:
-            IPアドレスの地理的位置情報
+            IPアドレス情報
             見つからない場合はNone
 
         Raises:

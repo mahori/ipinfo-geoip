@@ -1,4 +1,4 @@
-"""Redisキャッシュクライアント."""
+"""Redisクライアント."""
 
 from collections import UserDict
 from typing import cast
@@ -11,7 +11,7 @@ from ipinfo_geoip.redis_config import RedisConfig
 
 
 class RedisClient(UserDict[str, IPData | None]):
-    """Redisキャッシュクライアント."""
+    """Redisクライアント."""
 
     def __init__(self) -> None:
         """Redisクライアントを初期化する.
@@ -31,13 +31,13 @@ class RedisClient(UserDict[str, IPData | None]):
         self.ttl = int(config.ttl)
 
     def __missing__(self, ip_address: str) -> IPData | None:
-        """RedisからIP情報を取得する.
+        """RedisからIPアドレス情報を取得する.
 
         Args:
             ip_address: 検索するIPアドレス
 
         Returns:
-            キャッシュされたIP情報
+            キャッシュされたIPアドレス情報
             見つからない場合はNone
 
         Raises:
@@ -72,11 +72,11 @@ class RedisClient(UserDict[str, IPData | None]):
         return ip_data
 
     def __setitem__(self, ip_address: str, ip_data: IPData | None) -> None:
-        """IP情報をRedisにキャッシュする.
+        """IPアドレス情報をRedisにキャッシュする.
 
         Args:
             ip_address: IPアドレス
-            ip_data: キャッシュするIP情報
+            ip_data: キャッシュするIPアドレス情報
 
         Raises:
             TypeError: 引数の型が正しくない場合

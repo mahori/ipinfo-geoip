@@ -7,37 +7,25 @@
 [![CodeQL](https://github.com/mahori/ipinfo-geoip/actions/workflows/codeql.yml/badge.svg)](https://github.com/mahori/ipinfo-geoip/actions/workflows/codeql.yml)
 [![codecov](https://codecov.io/gh/mahori/ipinfo-geoip/graph/badge.svg?token=70GXGLS97X)](https://codecov.io/gh/mahori/ipinfo-geoip)
 
-IPアドレスからネットワーク(CIDR)，AS番号，国，組織を取得するPythonパッケージ
+IPアドレスからネットワーク，AS番号，国，組織を取得するPythonパッケージ
 
-MaxMind社のGeoLite Web Serviceを使用してGeoIP情報を取得し，Redisでキャッシュ機能を提供します．
+MaxMind社のGeoLite Web Serviceを使用してIPアドレス情報を取得し，Redisでキャッシュ機能を提供します．
 
 ## 特徴
 
-- **MaxMind GeoLite Web Service** を使用したIPアドレス情報の取得
-- **Redisキャッシュ** を使用したIPアドレス情報のキャッシュ
-- **型ヒント完全対応** (mypy準拠)
+- **GeoLite Web Service** を使用したIPアドレス情報の取得
+- **Redis** を使用したIPアドレス情報のキャッシュ
+- **型ヒント対応** (mypy準拠)
 - **包括的なテスト** (pytest + pytest-cov)
-
-<!--
-## インストール
-
-```bash
-# uvを使用(推奨)
-uv add ipinfo-geoip
-
-# pipを使用
-pip install ipinfo-geoip
-```
--->
 
 ## 環境変数設定
 
 以下の環境変数を設定してください:
 
 ```bash
-# GeoIP設定
-export IPINFO_GEOIP_ACCOUNT_ID="GeoLiteアカウントID"
-export IPINFO_GEOIP_LICENSE_KEY="GeoLiteライセンスキー"
+# GeoLite2 Web Service設定
+export IPINFO_GEOIP_ACCOUNT_ID="アカウントID"
+export IPINFO_GEOIP_LICENSE_KEY="ライセンスキー"
 export IPINFO_GEOIP_HOST="geolite.info"
 
 # Redis設定
@@ -89,7 +77,7 @@ from ipinfo_geoip.exceptions import (
 
 try:
     ipinfo = IPInfo()
-    result = ipinfo["invalid_ip"]
+    result = ipinfo["invalid.ip"]
 except ConfigurationError as e:
     print(f"設定エラー: {e}")
 except IPInfoError as e:
@@ -143,12 +131,12 @@ uvx nox -s build
 ## 要件
 
 - Python 3.11+
-- MaxMind GeoLite Web Serviceアカウント
+- GeoLite Web Serviceアカウント
 - Redisサーバー
 
 ## 依存関係
 
-- `geoip2>=5.1.0` - MaxMind GeoIP2クライアント
+- `geoip2>=5.1.0` - GeoLite2 Web Serviceクライアント
 - `redis>=6.4.0` - Redisクライアント
 
 ## ライセンス
@@ -173,9 +161,3 @@ uvx nox -s build
 ## サポート
 
 - [GitHub Issues](https://github.com/mahori/ipinfo-geoip/issues) - バグ報告・機能要望
-
-<!--
-## 変更履歴
-
-詳細な変更履歴は [CHANGELOG.md](CHANGELOG.md) を参照してください．
--->

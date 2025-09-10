@@ -1,4 +1,4 @@
-"""IPアドレスからGeoIP情報を取得するPythonモジュール."""
+"""IPアドレスからネットワーク, AS番号, 国, 組織を取得するPythonモジュール."""
 
 from .exceptions import (
     CacheError,

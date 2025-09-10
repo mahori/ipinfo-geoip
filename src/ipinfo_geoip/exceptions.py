@@ -1,4 +1,4 @@
-"""IPInfo GeoIP関連の例外クラス定義."""
+"""IPInfo関連の例外クラス定義."""
 
 from typing import Any
 

@@ -1,4 +1,4 @@
-"""MaxMind GeoLite2 Web Serviceクライアント."""
+"""GeoLite2 Web Serviceクライアント."""
 
 from collections import UserDict
 
@@ -12,10 +12,10 @@ from .to_str import _to_str
 
 
 class GeoIPClient(UserDict[str, IPData | None]):
-    """MaxMind GeoLite2 Web Serviceクライアント."""
+    """GeoLite2 Web Serviceクライアント."""
 
     def __init__(self) -> None:
-        """GeoIPクライアントを初期化する.
+        """GeoLite2 Web Serviceクライアントを初期化する.
 
         Raises:
             ConfigurationError: 必要な認証情報が不足している場合
@@ -31,18 +31,18 @@ class GeoIPClient(UserDict[str, IPData | None]):
         self.client = geoip2.webservice.Client(config.account_id, config.license_key, config.host)
 
     def __missing__(self, ip_address: str) -> IPData | None:
-        """指定されたIPアドレスの地理的情報等を取得する.
+        """指定されたGeoIP情報を取得する.
 
         Args:
             ip_address: 検索するIPアドレス
 
         Returns:
-            IPアドレスの情報
+            GeoIP情報
             見つからない場合はNone
 
         Raises:
             TypeError: ip_addressが文字列でない場合
-            GeoIPClientError: GeoIPサービスでエラーが発生した場合
+            GeoIPClientError: GeoLite2 Web Serviceでエラーが発生した場合
 
         """
         if not isinstance(ip_address, str):

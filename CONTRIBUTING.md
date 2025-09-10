@@ -35,7 +35,7 @@ ipinfo-geoipプロジェクトへの貢献を検討していただきありが�
 - Python 3.11+
 - Git
 - [uv](https://docs.astral.sh/uv/) - Pythonパッケージマネージャ
-- MaxMind GeoLite2アカウント
+- GeoLite2 Web Serviceアカウント
 - Redisサーバー
 
 ### セットアップ手順
@@ -57,7 +57,7 @@ uv sync --dev
 3. 環境変数を設定
 
 ```bash
-# GeoIP設定
+# GeoLite2 Web Service設定
 export IPINFO_GEOIP_ACCOUNT_ID="GeoLite2 アカウントID"
 export IPINFO_GEOIP_LICENSE_KEY="GeoLite2 ライセンスキー"
 export IPINFO_GEOIP_HOST="geolite.info"
@@ -187,7 +187,7 @@ uvx nox coverage
 
 **例:**
 ```
-feat(geoip): MaxMindクライアントのタイムアウト設定を追加
+feat(geoip): GeoLite2 Web Serviceクライアントのタイムアウト設定を追加
 
 GeoIPクライアントでネットワークタイムアウトを設定できるように改善．
 デフォルトは30秒とし，環境変数で変更可能．
