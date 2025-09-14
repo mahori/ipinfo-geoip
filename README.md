@@ -43,7 +43,7 @@ import json
 ipinfo = IPInfo()
 
 # IPアドレスからネットワーク，AS番号，国，組織を取得
-result = ipinfo["8.8.8.8"]
+result = ipinfo["192.0.2.1"]
 
 # 結果を表示
 print(f"国: {result['country']}")
@@ -58,11 +58,11 @@ print(json.dumps(result))
 
 ```json
 {
-  "ip_address": "8.8.8.8",
-  "network": "8.8.8.0/24",
-  "as_number": "15169",
+  "ip_address": "192.0.2.1",
+  "network": "192.0.2.0/24",
+  "as_number": "65001",
   "country": "US",
-  "organization": "GOOGLE"
+  "organization": "Example Organization"
 }
 ```
 
