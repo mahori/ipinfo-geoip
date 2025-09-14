@@ -141,7 +141,10 @@ class TestRedisClient:
         mock_config.ttl = 3600
         mock_from_env.return_value = mock_config
 
+        mock_redis_pipeline = Mock()
+
         mock_redis_instance = Mock()
+        mock_redis_instance.pipeline.return_value = mock_redis_pipeline
         mock_redis_from_url.return_value = mock_redis_instance
 
         # テストデータ
@@ -166,8 +169,10 @@ class TestRedisClient:
             "country": "US",
             "organization": "GOOGLE",
         }
-        mock_redis_instance.hset.assert_called_once_with("ipinfo:8.8.8.8", mapping=expected_mapping)
-        mock_redis_instance.expire.assert_called_once_with("ipinfo:8.8.8.8", 3600)
+        mock_redis_instance.pipeline.assert_called_once()
+        mock_redis_pipeline.hset.assert_called_once_with("ipinfo:8.8.8.8", mapping=expected_mapping)
+        mock_redis_pipeline.expire.assert_called_once_with("ipinfo:8.8.8.8", 3600)
+        mock_redis_pipeline.execute.assert_called_once()
 
     @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
     @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")

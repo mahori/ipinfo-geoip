@@ -89,7 +89,10 @@ class RedisClient(UserDict[str, IPData | None]):
 
         name = f"ipinfo:{ip_address}"
         mapping = ip_data.to_dict()
-        self.client.hset(name, mapping=mapping)
-        self.client.expire(name, self.ttl)
+
+        pipeline = self.client.pipeline()
+        pipeline.hset(name, mapping=mapping)
+        pipeline.expire(name, self.ttl)
+        pipeline.execute()
 
         super().__setitem__(ip_address, ip_data)
