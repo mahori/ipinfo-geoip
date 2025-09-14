@@ -4,7 +4,7 @@ from typing import Any
 
 
 class IPInfoError(Exception):
-    """IPInfo関連のベース例外クラス."""
+    """IPInfo関連の基底例外クラス."""
 
     def __init__(self, message: str, details: dict[str, Any] | None = None) -> None:
         """例外を初期化する.
@@ -21,16 +21,16 @@ class IPInfoError(Exception):
 
 
 class GeoIPClientError(IPInfoError):
-    """GeoIPクライアント関連のエラー."""
+    """GeoIPクライアント関連の例外."""
 
 
 class RedisClientError(IPInfoError):
-    """Redisクライアント関連のエラー."""
+    """Redisクライアント関連の例外."""
 
 
 class ConfigurationError(IPInfoError):
-    """設定関連のエラー."""
+    """設定関連の例外."""
 
 
 class ValidationError(IPInfoError):
-    """データ検証関連のエラー."""
+    """データ検証関連の例外."""
