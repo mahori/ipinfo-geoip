@@ -41,7 +41,7 @@ class TestRedisClient:
         mock_from_env.side_effect = ValidationError("Missing environment variable")
 
         with pytest.raises(ConfigurationError):
-            RedisClient()
+            _ = RedisClient()
 
     @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
     @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")
@@ -113,7 +113,7 @@ class TestRedisClient:
         client = RedisClient()
 
         with pytest.raises(RedisClientError):
-            client["8.8.8.8"]
+            _ = client["8.8.8.8"]
 
     @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
     @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")
@@ -274,7 +274,7 @@ class TestRedisClient:
 
         # テスト実行
         client = RedisClient()
-        client["192.168.1.1"]
+        _ = client["192.168.1.1"]
 
         # キー形式の検証
         mock_redis_instance.hgetall.assert_called_once_with("ipinfo:192.168.1.1")

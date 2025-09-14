@@ -98,7 +98,7 @@ class TestIPData:
         """無効なIPアドレスでの初期化テスト."""
         match = "'invalid.ip' does not appear to be an IPv4 or IPv6 address"
         with pytest.raises(ValidationError, match=match):
-            IPData(
+            _ = IPData(
                 ip_address="invalid_ip",
                 network=TEST_IP_NETWORK,
                 as_number=TEST_AS_NUMBER,
@@ -110,7 +110,7 @@ class TestIPData:
         """無効なIPネットワークでの初期化テスト."""
         match = "'invalid.network' does not appear to be an IPv4 or IPv6 network"
         with pytest.raises(ValidationError, match=match):
-            IPData(
+            _ = IPData(
                 ip_address=TEST_IP_ADDRESS_1,
                 network="invalid.network",
                 as_number=TEST_AS_NUMBER,
@@ -129,7 +129,7 @@ class TestIPData:
         """無効な自律システム番号の初期化テスト."""
         match = f"AS number must be between {AS_NUMBER_MIN} and {AS_NUMBER_MAX - 1}"
         with pytest.raises(ValidationError, match=match):
-            IPData(
+            _ = IPData(
                 ip_address=TEST_IP_ADDRESS_1,
                 network=TEST_IP_NETWORK,
                 as_number=str(as_number),
@@ -148,7 +148,7 @@ class TestIPData:
         """無効な国コードの初期化テスト."""
         match = f"Country code must be {COUNTRY_CODE_LENGTH} characters"
         with pytest.raises(ValidationError, match=match):
-            IPData(
+            _ = IPData(
                 ip_address=TEST_IP_ADDRESS_1,
                 network=TEST_IP_NETWORK,
                 as_number=TEST_AS_NUMBER,

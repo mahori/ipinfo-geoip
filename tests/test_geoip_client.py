@@ -41,7 +41,7 @@ class TestGeoIPClient:
         mock_from_env.side_effect = ValidationError("Missing environment variable")
 
         with pytest.raises(ConfigurationError):
-            GeoIPClient()
+            _ = GeoIPClient()
 
     @patch("ipinfo_geoip.geoip_client.geoip2.webservice.Client")
     @patch("ipinfo_geoip.geoip_client.GeoIPConfig.from_env")
@@ -90,7 +90,7 @@ class TestGeoIPClient:
         client = GeoIPClient()
 
         with pytest.raises(GeoIPClientError):
-            client["192.168.1.1"]
+            _ = client["192.168.1.1"]
 
     @patch("ipinfo_geoip.geoip_client.geoip2.webservice.Client")
     @patch("ipinfo_geoip.geoip_client.GeoIPConfig.from_env")
