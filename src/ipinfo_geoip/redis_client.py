@@ -72,6 +72,9 @@ class RedisClient(UserDict[str, IPData | None]):
         country = response["country"]
         organization = response["organization"]
 
+        if network == "" or as_number == "" or country == "" or organization == "":
+            return None
+
         ip_data = IPData(ip_address, network, as_number, country, organization)
 
         super().__setitem__(ip_address, ip_data)

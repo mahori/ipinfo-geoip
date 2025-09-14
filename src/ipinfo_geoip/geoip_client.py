@@ -69,6 +69,9 @@ class GeoIPClient(UserDict[str, IPData | None]):
         country = _to_str(response.country.iso_code)
         organization = _to_str(response.traits.autonomous_system_organization)
 
+        if network == "" or as_number == "" or country == "" or organization == "":
+            return None
+
         ip_data = IPData(ip_address, network, as_number, country, organization)
 
         super().__setitem__(ip_address, ip_data)

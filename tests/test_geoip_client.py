@@ -150,6 +150,4 @@ class TestGeoIPClient:
         result = client["8.8.8.8"]
 
         # 検証
-        assert isinstance(result, IPData)
-        assert result.network == ""
-        assert result.as_number == ""
+        assert result is None
