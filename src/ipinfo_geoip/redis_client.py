@@ -6,9 +6,9 @@ from typing import cast
 
 import redis
 
-from ipinfo_geoip.exceptions import ConfigurationError, RedisClientError, ValidationError
-from ipinfo_geoip.ipdata import IPData
-from ipinfo_geoip.redis_config import RedisConfig
+from .exceptions import ConfigurationError, RedisClientError, ValidationError
+from .ipdata import IPData
+from .redis_config import RedisConfig
 
 
 class RedisClient(UserDict[str, IPData | None]):
