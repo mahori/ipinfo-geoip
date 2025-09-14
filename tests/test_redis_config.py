@@ -25,6 +25,11 @@ class TestRedisConfig:
         with pytest.raises(TypeError):
             RedisConfig(123, "3600")  # type: ignore[arg-type]
 
+    def test_init_with_invalid_ttl_type(self) -> None:
+        """無効なTTL型のテスト."""
+        with pytest.raises(TypeError):
+            RedisConfig("redis://localhost:6379", 3600)  # type: ignore[arg-type]
+
     @patch.dict(
         os.environ,
         {

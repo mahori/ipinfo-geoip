@@ -28,6 +28,8 @@ class RedisConfig:
         """
         if not isinstance(uri, str):
             raise TypeError
+        if not isinstance(ttl, str):
+            raise TypeError
 
         self.uri = uri
         self.ttl = int(ttl)
