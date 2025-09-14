@@ -1,7 +1,9 @@
 """IPアドレスからネットワーク, AS番号, 国, 組織を取得するメインクラス."""
 
+import ipaddress
 from collections import UserDict
 
+from .exceptions import ValidationError
 from .geoip_client import GeoIPClient
 from .redis_client import RedisClient
 
@@ -36,6 +38,12 @@ class IPInfo(UserDict[str, dict[str, str] | None]):
         """
         if not isinstance(ip_address, str):
             raise TypeError
+
+        try:
+            _ = ipaddress.ip_address(ip_address)
+        except ValueError as e:
+            msg = f"Invalid IP address: {ip_address}"
+            raise ValidationError(msg, {"error": str(e)}) from e
 
         ip_data = self.redis[ip_address]
         if ip_data is not None:

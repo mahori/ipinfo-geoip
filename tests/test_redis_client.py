@@ -134,6 +134,23 @@ class TestRedisClient:
 
     @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
     @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")
+    def test_missing_with_invalid_ip_value(self, mock_from_env: Mock, mock_redis_from_url: Mock) -> None:
+        """無効なIPアドレス値のテスト."""
+        # モック設定
+        mock_config = Mock()
+        mock_config.ttl = 3600
+        mock_from_env.return_value = mock_config
+
+        mock_redis_instance = Mock()
+        mock_redis_from_url.return_value = mock_redis_instance
+
+        client = RedisClient()
+
+        with pytest.raises(ValidationError):
+            _ = client["invalid.ip"]
+
+    @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
+    @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")
     def test_setitem_success(self, mock_from_env: Mock, mock_redis_from_url: Mock) -> None:
         """成功時の__setitem__メソッドテスト."""
         # モック設定

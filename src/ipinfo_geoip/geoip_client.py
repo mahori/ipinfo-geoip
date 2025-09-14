@@ -1,5 +1,6 @@
 """GeoLite2 Web Serviceクライアント."""
 
+import ipaddress
 from collections import UserDict
 
 import geoip2.errors
@@ -47,6 +48,12 @@ class GeoIPClient(UserDict[str, IPData | None]):
         """
         if not isinstance(ip_address, str):
             raise TypeError
+
+        try:
+            _ = ipaddress.ip_address(ip_address)
+        except ValueError as e:
+            msg = f"Invalid IP address: {ip_address}"
+            raise ValidationError(msg, {"error": str(e)}) from e
 
         try:
             response = self.client.city(ip_address)

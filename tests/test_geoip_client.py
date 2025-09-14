@@ -119,6 +119,14 @@ class TestGeoIPClient:
             with pytest.raises(TypeError):
                 _ = client[123]  # type: ignore[index]
 
+    def test_missing_with_invalid_ip_value(self) -> None:
+        """無効なIPアドレス値のテスト."""
+        with patch("ipinfo_geoip.geoip_client.GeoIPConfig.from_env"):
+            client = GeoIPClient()
+
+            with pytest.raises(ValidationError):
+                _ = client["invalid.ip"]
+
     @patch("ipinfo_geoip.geoip_client.geoip2.webservice.Client")
     @patch("ipinfo_geoip.geoip_client.GeoIPConfig.from_env")
     def test_missing_with_partial_data(self, mock_from_env: Mock, mock_client: Mock) -> None:

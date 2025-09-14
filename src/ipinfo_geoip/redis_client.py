@@ -1,5 +1,6 @@
 """Redisクライアント."""
 
+import ipaddress
 from collections import UserDict
 from typing import cast
 
@@ -47,6 +48,12 @@ class RedisClient(UserDict[str, IPData | None]):
         """
         if not isinstance(ip_address, str):
             raise TypeError
+
+        try:
+            _ = ipaddress.ip_address(ip_address)
+        except ValueError as e:
+            msg = f"Invalid IP address: {ip_address}"
+            raise ValidationError(msg, {"error": str(e)}) from e
 
         name = f"ipinfo:{ip_address}"
         try:

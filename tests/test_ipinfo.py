@@ -5,8 +5,9 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from ipinfo_geoip import IPInfo
+from ipinfo_geoip.exceptions import ValidationError
 from ipinfo_geoip.ipdata import IPData
+from ipinfo_geoip.ipinfo import IPInfo
 
 
 class TestIPInfo:
@@ -185,7 +186,7 @@ class TestIPInfo:
     def test_missing_with_none_result(self, mock_redis_client: Mock, mock_geoip_client: Mock) -> None:
         """結果がNoneの場合のテスト."""
         # テストデータ
-        ip_address = "invalid.ip"
+        ip_address = "192.168.1.1"
 
         # Redisクライアントのモック設定
         mock_redis_instance = Mock()
@@ -221,3 +222,13 @@ class TestIPInfo:
 
         with pytest.raises(TypeError):
             _ = ipinfo[123]  # type: ignore[index]
+
+    @patch("ipinfo_geoip.ipinfo.RedisClient")
+    @patch("ipinfo_geoip.ipinfo.GeoIPClient")
+    def test_missing_with_invalid_ip_value(self, mock_geoip_client: Mock, mock_redis_client: Mock) -> None:
+        """無効なIPアドレス値のテスト."""
+        del mock_geoip_client, mock_redis_client
+        ipinfo = IPInfo()
+
+        with pytest.raises(ValidationError):
+            _ = ipinfo["invalid.ip"]
