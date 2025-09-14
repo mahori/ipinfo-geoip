@@ -19,10 +19,14 @@ def _to_str(value: int | str | IPv4Network | IPv6Network | None) -> str:
     """
     if value is None:
         return ""
+
     if isinstance(value, bool):
         raise TypeError
+
     if isinstance(value, str):
         return value
+
     if isinstance(value, (int, IPv4Network, IPv6Network)):
         return str(value)
+
     raise TypeError
