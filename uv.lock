@@ -365,7 +365,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "nox", specifier = ">=2025.5.1" },
-    { name = "pytest", specifier = ">=8.4.1" },
+    { name = "pytest", specifier = ">=8.4.2" },
 ]
 
 [[package]]
