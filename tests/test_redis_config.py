@@ -5,8 +5,13 @@ from unittest.mock import patch
 
 import pytest
 
+from ipinfo_geoip.constants import REDIS_CACHE_TTL_ENV, REDIS_URI_ENV
 from ipinfo_geoip.exceptions import ValidationError
 from ipinfo_geoip.redis_config import RedisConfig
+
+TEST_REDIS_URI_STR: str = "redis://localhost:6379"
+TEST_REDIS_TTL_INT: int = 3600
+TEST_REDIS_TTL_STR: str = "3600"
 
 
 class TestRedisConfig:
@@ -14,27 +19,16 @@ class TestRedisConfig:
 
     def test_init(self) -> None:
         """初期化のテスト."""
-        config = RedisConfig("redis://localhost:6379", "3600")
+        config = RedisConfig(TEST_REDIS_URI_STR, TEST_REDIS_TTL_STR)
 
-        expected_ttl = 3600
-        assert config.uri == "redis://localhost:6379"
-        assert config.ttl == expected_ttl
-
-    def test_init_with_invalid_uri_type(self) -> None:
-        """無効なURI型のテスト."""
-        with pytest.raises(TypeError):
-            RedisConfig(123, "3600")  # type: ignore[arg-type]
-
-    def test_init_with_invalid_ttl_type(self) -> None:
-        """無効なTTL型のテスト."""
-        with pytest.raises(TypeError):
-            RedisConfig("redis://localhost:6379", 3600)  # type: ignore[arg-type]
+        assert config.uri == TEST_REDIS_URI_STR
+        assert config.ttl == TEST_REDIS_TTL_INT
 
     @patch.dict(
         os.environ,
         {
-            "IPINFO_REDIS_URI": "redis://localhost:6379",
-            "IPINFO_REDIS_CACHE_TTL": "3600",
+            REDIS_URI_ENV: TEST_REDIS_URI_STR,
+            REDIS_CACHE_TTL_ENV: TEST_REDIS_TTL_STR,
         },
         clear=True,
     )
@@ -42,30 +36,42 @@ class TestRedisConfig:
         """環境変数からの作成テスト."""
         config = RedisConfig.from_env()
 
-        expected_ttl = 3600
-        assert config.uri == "redis://localhost:6379"
-        assert config.ttl == expected_ttl
+        assert config.uri == TEST_REDIS_URI_STR
+        assert config.ttl == TEST_REDIS_TTL_INT
 
     @patch.dict(
         os.environ,
         {
-            "IPINFO_REDIS_CACHE_TTL": "3600",
+            REDIS_CACHE_TTL_ENV: TEST_REDIS_TTL_STR,
         },
         clear=True,
     )
     def test_from_env_missing_uri(self) -> None:
         """URI環境変数不足のテスト."""
-        with pytest.raises(ValidationError):
-            RedisConfig.from_env()
+        match = f"Missing environment variables: {REDIS_URI_ENV}"
+        with pytest.raises(ValidationError, match=match):
+            _ = RedisConfig.from_env()
 
     @patch.dict(
         os.environ,
         {
-            "IPINFO_REDIS_URI": "redis://localhost:6379",
+            REDIS_URI_ENV: TEST_REDIS_URI_STR,
         },
         clear=True,
     )
     def test_from_env_missing_ttl(self) -> None:
         """TTL環境変数不足のテスト."""
-        with pytest.raises(ValidationError):
-            RedisConfig.from_env()
+        match = f"Missing environment variables: {REDIS_CACHE_TTL_ENV}"
+        with pytest.raises(ValidationError, match=match):
+            _ = RedisConfig.from_env()
+
+    @patch.dict(
+        os.environ,
+        {},
+        clear=True,
+    )
+    def test_from_env_missing_environment_variables(self) -> None:
+        """複数の環境変数不足のテスト."""
+        match = f"Missing environment variables: {REDIS_URI_ENV}, {REDIS_CACHE_TTL_ENV}"
+        with pytest.raises(ValidationError, match=match):
+            _ = RedisConfig.from_env()

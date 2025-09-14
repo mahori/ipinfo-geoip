@@ -18,34 +18,24 @@ class GeoIPConfig:
     """
 
     def __init__(self, account_id: str, license_key: str, host: str) -> None:
-        """GeoLite2 Web Service設定を初期化する.
+        """GeoIPConfigインスタンスを初期化する.
 
         Args:
             account_id: アカウントID
             license_key: ライセンスキー
             host: ホスト名
 
-        Raises:
-            TypeError: 引数の型が正しくない場合
-
         """
-        if not isinstance(account_id, str):
-            raise TypeError
-        if not isinstance(license_key, str):
-            raise TypeError
-        if not isinstance(host, str):
-            raise TypeError
-
         self.account_id = int(account_id)
         self.license_key = license_key
         self.host = host
 
     @classmethod
     def from_env(cls) -> Self:
-        """環境変数からGeoLite2 Web Service設定を作成する.
+        """環境変数からGeoIPConfigインスタンスを作成する.
 
         Returns:
-            環境変数から作成されたGeoIPConfig
+            環境変数から作成されたGeoIPConfigインスタンス
 
         Raises:
             ValidationError: 必要な環境変数が設定されていない場合

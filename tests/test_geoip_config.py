@@ -1,12 +1,19 @@
 """GeoIPConfigクラスのテスト."""
 
 import os
+from typing import Final
 from unittest.mock import patch
 
 import pytest
 
+from ipinfo_geoip.constants import GEOIP_ACCOUNT_ID_ENV, GEOIP_HOST_ENV, GEOIP_LICENSE_KEY_ENV
 from ipinfo_geoip.exceptions import ValidationError
 from ipinfo_geoip.geoip_config import GeoIPConfig
+
+TEST_GEOIP_ACCOUNT_ID_INT: Final[int] = 12345
+TEST_GEOIP_ACCOUNT_ID_STR: Final[str] = "12345"
+TEST_GEOIP_LICENSE_KEY_STR: Final[str] = "license_key"
+TEST_GEOIP_HOST_STR: Final[str] = "geolite.info"
 
 
 class TestGeoIPConfig:
@@ -14,34 +21,18 @@ class TestGeoIPConfig:
 
     def test_init(self) -> None:
         """初期化のテスト."""
-        config = GeoIPConfig("12345", "license_key", "geoip.maxmind.com")
+        config = GeoIPConfig(TEST_GEOIP_ACCOUNT_ID_STR, TEST_GEOIP_LICENSE_KEY_STR, TEST_GEOIP_HOST_STR)
 
-        expected_id = 12345
-        assert config.account_id == expected_id
-        assert config.license_key == "license_key"
-        assert config.host == "geoip.maxmind.com"
-
-    def test_init_with_invalid_account_id_type(self) -> None:
-        """無効なアカウントID型のテスト."""
-        with pytest.raises(TypeError):
-            GeoIPConfig(12345, "license_key", "host")  # type: ignore[arg-type]
-
-    def test_init_with_invalid_license_key_type(self) -> None:
-        """無効なライセンスキー型のテスト."""
-        with pytest.raises(TypeError):
-            GeoIPConfig("12345", 123, "host")  # type: ignore[arg-type]
-
-    def test_init_with_invalid_host_type(self) -> None:
-        """無効なホスト型のテスト."""
-        with pytest.raises(TypeError):
-            GeoIPConfig("12345", "license_key", 123)  # type: ignore[arg-type]
+        assert config.account_id == TEST_GEOIP_ACCOUNT_ID_INT
+        assert config.license_key == TEST_GEOIP_LICENSE_KEY_STR
+        assert config.host == TEST_GEOIP_HOST_STR
 
     @patch.dict(
         os.environ,
         {
-            "IPINFO_GEOIP_ACCOUNT_ID": "12345",
-            "IPINFO_GEOIP_LICENSE_KEY": "test_key",
-            "IPINFO_GEOIP_HOST": "geoip.maxmind.com",
+            GEOIP_ACCOUNT_ID_ENV: TEST_GEOIP_ACCOUNT_ID_STR,
+            GEOIP_LICENSE_KEY_ENV: TEST_GEOIP_LICENSE_KEY_STR,
+            GEOIP_HOST_ENV: TEST_GEOIP_HOST_STR,
         },
         clear=True,
     )
@@ -49,46 +40,59 @@ class TestGeoIPConfig:
         """環境変数からの作成テスト."""
         config = GeoIPConfig.from_env()
 
-        expected_id = 12345
-        assert config.account_id == expected_id
-        assert config.license_key == "test_key"
-        assert config.host == "geoip.maxmind.com"
+        assert config.account_id == TEST_GEOIP_ACCOUNT_ID_INT
+        assert config.license_key == TEST_GEOIP_LICENSE_KEY_STR
+        assert config.host == TEST_GEOIP_HOST_STR
 
     @patch.dict(
         os.environ,
         {
-            "IPINFO_GEOIP_LICENSE_KEY": "test_key",
-            "IPINFO_GEOIP_HOST": "geoip.maxmind.com",
+            GEOIP_LICENSE_KEY_ENV: TEST_GEOIP_LICENSE_KEY_STR,
+            GEOIP_HOST_ENV: TEST_GEOIP_HOST_STR,
         },
         clear=True,
     )
     def test_from_env_missing_account_id(self) -> None:
         """アカウントID環境変数不足のテスト."""
-        with pytest.raises(ValidationError):
-            GeoIPConfig.from_env()
+        match = f"Missing environment variables: {GEOIP_ACCOUNT_ID_ENV}"
+        with pytest.raises(ValidationError, match=match):
+            _ = GeoIPConfig.from_env()
 
     @patch.dict(
         os.environ,
         {
-            "IPINFO_GEOIP_ACCOUNT_ID": "12345",
-            "IPINFO_GEOIP_HOST": "geoip.maxmind.com",
+            GEOIP_ACCOUNT_ID_ENV: TEST_GEOIP_ACCOUNT_ID_STR,
+            GEOIP_HOST_ENV: TEST_GEOIP_HOST_STR,
         },
         clear=True,
     )
     def test_from_env_missing_license_key(self) -> None:
         """ライセンスキー環境変数不足のテスト."""
-        with pytest.raises(ValidationError):
-            GeoIPConfig.from_env()
+        match = f"Missing environment variables: {GEOIP_LICENSE_KEY_ENV}"
+        with pytest.raises(ValidationError, match=match):
+            _ = GeoIPConfig.from_env()
 
     @patch.dict(
         os.environ,
         {
-            "IPINFO_GEOIP_ACCOUNT_ID": "12345",
-            "IPINFO_GEOIP_LICENSE_KEY": "test_key",
+            GEOIP_ACCOUNT_ID_ENV: TEST_GEOIP_ACCOUNT_ID_STR,
+            GEOIP_LICENSE_KEY_ENV: TEST_GEOIP_LICENSE_KEY_STR,
         },
         clear=True,
     )
     def test_from_env_missing_host(self) -> None:
         """ホスト環境変数不足のテスト."""
-        with pytest.raises(ValidationError):
-            GeoIPConfig.from_env()
+        match = f"Missing environment variables: {GEOIP_HOST_ENV}"
+        with pytest.raises(ValidationError, match=match):
+            _ = GeoIPConfig.from_env()
+
+    @patch.dict(
+        os.environ,
+        {},
+        clear=True,
+    )
+    def test_from_env_missing_environment_variables(self) -> None:
+        """複数の環境変数不足のテスト."""
+        match = f"Missing environment variables: {GEOIP_ACCOUNT_ID_ENV}, {GEOIP_LICENSE_KEY_ENV}, {GEOIP_HOST_ENV}"
+        with pytest.raises(ValidationError, match=match):
+            _ = GeoIPConfig.from_env()
