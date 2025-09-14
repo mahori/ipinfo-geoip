@@ -9,7 +9,7 @@ class IPData:
 
     Attributes:
         ip_address: IPアドレス
-        network: ネットワークCIDRブロック
+        network: IPネットワーク(CIDRブロック)
         as_number: 自律システム番号
         country: ISO国コード
         organization: 組織名
@@ -32,10 +32,10 @@ class IPData:
         return self.network != "" and self.as_number != "" and self.country != "" and self.organization != ""
 
     def to_dict(self) -> dict[str, str]:
-        """IPデータを辞書形式に変換する.
+        """データを辞書形式に変換する.
 
         Returns:
-            IPデータのフィールドを含む辞書
+            データのフィールドを含む辞書
 
         """
         return {

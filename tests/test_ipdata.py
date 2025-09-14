@@ -1,72 +1,139 @@
 """IPDataクラスのテスト."""
 
+from typing import Final
+
 from ipinfo_geoip.ipdata import IPData
+
+TEST_IP_ADDRESS_1: Final[str] = "192.0.2.1"
+TEST_IP_ADDRESS_2: Final[str] = "192.0.2.2"
+TEST_IP_NETWORK: Final[str] = "192.0.2.0/24"
+TEST_AS_NUMBER: Final[str] = "65001"
+TEST_COUNTRY_CODE: Final[str] = "US"
+TEST_ORGANIZATION: Final[str] = "Test Organization"
 
 
 class TestIPData:
     """IPDataクラスのテストクラス."""
 
     def test_init(self) -> None:
-        """初期化のテスト."""
+        """IPDataクラスの初期化テスト."""
         ip_data = IPData(
-            ip_address="8.8.8.8",
-            network="8.8.8.0/24",
-            as_number="15169",
-            country="US",
-            organization="GOOGLE",
+            ip_address=TEST_IP_ADDRESS_1,
+            network=TEST_IP_NETWORK,
+            as_number=TEST_AS_NUMBER,
+            country=TEST_COUNTRY_CODE,
+            organization=TEST_ORGANIZATION,
         )
 
-        assert isinstance(ip_data, IPData)
-        assert ip_data.ip_address == "8.8.8.8"
-        assert ip_data.network == "8.8.8.0/24"
-        assert ip_data.as_number == "15169"
-        assert ip_data.country == "US"
-        assert ip_data.organization == "GOOGLE"
+        assert ip_data.ip_address == TEST_IP_ADDRESS_1
+        assert ip_data.network == TEST_IP_NETWORK
+        assert ip_data.as_number == TEST_AS_NUMBER
+        assert ip_data.country == TEST_COUNTRY_CODE
+        assert ip_data.organization == TEST_ORGANIZATION
+
+    def test_dataclass_equality(self) -> None:
+        """IPDataクラスの等価性テスト."""
+        ip_data1 = IPData(
+            ip_address=TEST_IP_ADDRESS_1,
+            network=TEST_IP_NETWORK,
+            as_number=TEST_AS_NUMBER,
+            country=TEST_COUNTRY_CODE,
+            organization=TEST_ORGANIZATION,
+        )
+
+        ip_data2 = IPData(
+            ip_address=TEST_IP_ADDRESS_1,
+            network=TEST_IP_NETWORK,
+            as_number=TEST_AS_NUMBER,
+            country=TEST_COUNTRY_CODE,
+            organization=TEST_ORGANIZATION,
+        )
+
+        assert ip_data1 == ip_data2
+
+    def test_dataclass_inequality(self) -> None:
+        """IPDataクラスの非等価性テスト."""
+        ip_data1 = IPData(
+            ip_address=TEST_IP_ADDRESS_1,
+            network=TEST_IP_NETWORK,
+            as_number=TEST_AS_NUMBER,
+            country=TEST_COUNTRY_CODE,
+            organization=TEST_ORGANIZATION,
+        )
+
+        ip_data2 = IPData(
+            ip_address=TEST_IP_ADDRESS_2,
+            network=TEST_IP_NETWORK,
+            as_number=TEST_AS_NUMBER,
+            country=TEST_COUNTRY_CODE,
+            organization=TEST_ORGANIZATION,
+        )
+
+        assert ip_data1 != ip_data2
+
+    def test_dataclass_repr(self) -> None:
+        """IPDataクラスの文字列表現テスト."""
+        ip_data = IPData(
+            ip_address=TEST_IP_ADDRESS_1,
+            network=TEST_IP_NETWORK,
+            as_number=TEST_AS_NUMBER,
+            country=TEST_COUNTRY_CODE,
+            organization=TEST_ORGANIZATION,
+        )
+
+        repr_str = repr(ip_data)
+
+        assert "IPData" in repr_str
+        assert TEST_IP_ADDRESS_1 in repr_str
+        assert TEST_IP_NETWORK in repr_str
+        assert TEST_AS_NUMBER in repr_str
+        assert TEST_COUNTRY_CODE in repr_str
+        assert TEST_ORGANIZATION in repr_str
 
     def test_is_complete_with_complete_data(self) -> None:
         """完全なデータでのis_completeテスト."""
         ip_data = IPData(
-            ip_address="8.8.8.8",
-            network="8.8.8.0/24",
-            as_number="15169",
-            country="US",
-            organization="GOOGLE",
+            ip_address=TEST_IP_ADDRESS_1,
+            network=TEST_IP_NETWORK,
+            as_number=TEST_AS_NUMBER,
+            country=TEST_COUNTRY_CODE,
+            organization=TEST_ORGANIZATION,
         )
 
         assert ip_data.is_complete() is True
 
-    def test_is_complete_with_empty_network(self) -> None:
-        """空のネットワークでのis_completeテスト."""
+    def test_is_complete_with_empty_ip_network(self) -> None:
+        """空のIPネットワークでのis_completeテスト."""
         ip_data = IPData(
-            ip_address="192.168.1.1",
+            ip_address=TEST_IP_ADDRESS_1,
             network="",
-            as_number="15169",
-            country="US",
-            organization="GOOGLE",
+            as_number=TEST_AS_NUMBER,
+            country=TEST_COUNTRY_CODE,
+            organization=TEST_ORGANIZATION,
         )
 
         assert ip_data.is_complete() is False
 
     def test_is_complete_with_zero_as_number(self) -> None:
-        """AS番号が0でのis_completeテスト."""
+        """空のAS番号でのis_completeテスト."""
         ip_data = IPData(
-            ip_address="192.168.1.1",
-            network="192.168.1.0/24",
+            ip_address=TEST_IP_ADDRESS_1,
+            network=TEST_IP_NETWORK,
             as_number="",
-            country="US",
-            organization="GOOGLE",
+            country=TEST_COUNTRY_CODE,
+            organization=TEST_ORGANIZATION,
         )
 
         assert ip_data.is_complete() is False
 
-    def test_is_complete_with_empty_country(self) -> None:
+    def test_is_complete_with_empty_country_code(self) -> None:
         """空の国コードでのis_completeテスト."""
         ip_data = IPData(
-            ip_address="192.168.1.1",
-            network="192.168.1.0/24",
-            as_number="15169",
+            ip_address=TEST_IP_ADDRESS_1,
+            network=TEST_IP_NETWORK,
+            as_number=TEST_AS_NUMBER,
             country="",
-            organization="GOOGLE",
+            organization=TEST_ORGANIZATION,
         )
 
         assert ip_data.is_complete() is False
@@ -74,19 +141,19 @@ class TestIPData:
     def test_is_complete_with_empty_organization(self) -> None:
         """空の組織名でのis_completeテスト."""
         ip_data = IPData(
-            ip_address="192.168.1.1",
-            network="192.168.1.0/24",
-            as_number="15169",
-            country="US",
+            ip_address=TEST_IP_ADDRESS_1,
+            network=TEST_IP_NETWORK,
+            as_number=TEST_AS_NUMBER,
+            country=TEST_COUNTRY_CODE,
             organization="",
         )
 
         assert ip_data.is_complete() is False
 
     def test_is_complete_with_all_empty(self) -> None:
-        """すべて空でのis_completeテスト."""
+        """IPアドレス以外が空でのis_completeテスト."""
         ip_data = IPData(
-            ip_address="invalid.ip",
+            ip_address=TEST_IP_ADDRESS_1,
             network="",
             as_number="",
             country="",
@@ -98,27 +165,27 @@ class TestIPData:
     def test_to_dict(self) -> None:
         """to_dictメソッドのテスト."""
         ip_data = IPData(
-            ip_address="8.8.8.8",
-            network="8.8.8.0/24",
-            as_number="15169",
-            country="US",
-            organization="GOOGLE",
+            ip_address=TEST_IP_ADDRESS_1,
+            network=TEST_IP_NETWORK,
+            as_number=TEST_AS_NUMBER,
+            country=TEST_COUNTRY_CODE,
+            organization=TEST_ORGANIZATION,
         )
 
         expected = {
-            "ip_address": "8.8.8.8",
-            "network": "8.8.8.0/24",
-            "as_number": "15169",
-            "country": "US",
-            "organization": "GOOGLE",
+            "ip_address": TEST_IP_ADDRESS_1,
+            "network": TEST_IP_NETWORK,
+            "as_number": TEST_AS_NUMBER,
+            "country": TEST_COUNTRY_CODE,
+            "organization": TEST_ORGANIZATION,
         }
 
         assert ip_data.to_dict() == expected
 
     def test_to_dict_with_empty_values(self) -> None:
-        """空の値を含むto_dictメソッドのテスト."""
+        """IPアドレス以外が空でのto_dictテスト."""
         ip_data = IPData(
-            ip_address="192.168.1.1",
+            ip_address=TEST_IP_ADDRESS_1,
             network="",
             as_number="",
             country="",
@@ -126,7 +193,7 @@ class TestIPData:
         )
 
         expected = {
-            "ip_address": "192.168.1.1",
+            "ip_address": TEST_IP_ADDRESS_1,
             "network": "",
             "as_number": "",
             "country": "",
@@ -134,61 +201,3 @@ class TestIPData:
         }
 
         assert ip_data.to_dict() == expected
-
-    def test_dataclass_equality(self) -> None:
-        """データクラスの等価性テスト."""
-        ip_data1 = IPData(
-            ip_address="8.8.8.8",
-            network="8.8.8.0/24",
-            as_number="15169",
-            country="US",
-            organization="GOOGLE",
-        )
-
-        ip_data2 = IPData(
-            ip_address="8.8.8.8",
-            network="8.8.8.0/24",
-            as_number="15169",
-            country="US",
-            organization="GOOGLE",
-        )
-
-        assert ip_data1 == ip_data2
-
-    def test_dataclass_inequality(self) -> None:
-        """データクラスの非等価性テスト."""
-        ip_data1 = IPData(
-            ip_address="8.8.8.8",
-            network="8.8.8.0/24",
-            as_number="15169",
-            country="US",
-            organization="GOOGLE",
-        )
-
-        ip_data2 = IPData(
-            ip_address="8.8.4.4",
-            network="8.8.8.0/24",
-            as_number="15169",
-            country="US",
-            organization="GOOGLE",
-        )
-
-        assert ip_data1 != ip_data2
-
-    def test_dataclass_repr(self) -> None:
-        """データクラスの文字列表現テスト."""
-        ip_data = IPData(
-            ip_address="8.8.8.8",
-            network="8.8.8.0/24",
-            as_number="15169",
-            country="US",
-            organization="GOOGLE",
-        )
-
-        repr_str = repr(ip_data)
-        assert "IPData" in repr_str
-        assert "8.8.8.8" in repr_str
-        assert "8.8.8.0/24" in repr_str
-        assert "15169" in repr_str
-        assert "US" in repr_str
-        assert "GOOGLE" in repr_str
