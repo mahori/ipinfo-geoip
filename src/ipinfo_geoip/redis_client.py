@@ -15,7 +15,7 @@ class RedisClient(UserDict[str, IPData | None]):
     """Redisクライアント."""
 
     def __init__(self) -> None:
-        """Redisクライアントを初期化する.
+        """RedisClientインスタンスを初期化する.
 
         Raises:
             ConfigurationError: 必要な認証情報が不足している場合
@@ -28,6 +28,7 @@ class RedisClient(UserDict[str, IPData | None]):
         except ValidationError as e:
             msg = "Redis configuration error"
             raise ConfigurationError(msg, {"error": str(e)}) from e
+
         self.client = redis.Redis.from_url(config.uri, decode_responses=True)
         self.ttl = config.ttl
 
@@ -38,26 +39,22 @@ class RedisClient(UserDict[str, IPData | None]):
             ip_address: 検索するIPアドレス
 
         Returns:
-            キャッシュされたIPアドレス情報
+            Redisから取得したIPアドレス情報
             見つからない場合はNone
 
         Raises:
-            TypeError: ip_addressが文字列でない場合
             RedisClientError: Redisでエラーが発生した場合
+            ValidationError: ip_addressが不正な場合
 
         """
-        if not isinstance(ip_address, str):
-            raise TypeError
-
         try:
             _ = ipaddress.ip_address(ip_address)
         except ValueError as e:
             msg = f"Invalid IP address: {ip_address}"
             raise ValidationError(msg, {"error": str(e)}) from e
 
-        name = f"ipinfo:{ip_address}"
         try:
-            response = self.client.hgetall(name)
+            response = self.client.hgetall(f"ipinfo:{ip_address}")
         except redis.ConnectionError as e:
             msg = f"Redis connection error: {e}"
             raise RedisClientError(msg, {"error": str(e)}) from e
@@ -66,7 +63,6 @@ class RedisClient(UserDict[str, IPData | None]):
             return None
 
         response = cast("dict[str, str]", response)
-
         network = response["network"]
         as_number = response["as_number"]
         country = response["country"]
@@ -82,20 +78,24 @@ class RedisClient(UserDict[str, IPData | None]):
         return ip_data
 
     def __setitem__(self, ip_address: str, ip_data: IPData | None) -> None:
-        """IPアドレス情報をRedisにキャッシュする.
+        """IPアドレス情報をRedisに保存する.
 
         Args:
             ip_address: IPアドレス
-            ip_data: キャッシュするIPアドレス情報
+            ip_data: 保存するIPアドレス情報
 
         Raises:
-            TypeError: 引数の型が正しくない場合
+            ValidationError: ip_addressが不正な場合
 
         """
-        if not isinstance(ip_address, str):
-            raise TypeError
-        if not isinstance(ip_data, IPData):
-            raise TypeError
+        try:
+            _ = ipaddress.ip_address(ip_address)
+        except ValueError as e:
+            msg = f"Invalid IP address: {ip_address}"
+            raise ValidationError(msg, {"error": str(e)}) from e
+
+        if ip_data is None or not ip_data.is_complete():
+            return
 
         name = f"ipinfo:{ip_address}"
         mapping = ip_data.to_dict()
