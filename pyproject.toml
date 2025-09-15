@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "ipinfo-geoip"
 version = "0.0.1"
-description = "IPアドレスからネットワーク，AS番号，国，組織を取得するPythonモジュール"
+description = "Python module to retrieve IP network, AS number, country code, and organization from IP address"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
@@ -70,4 +70,4 @@ select = ["ALL"]
 ignore = ["COM812", "D203", "D213"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["INP001", "S101"]
+"tests/**/*.py" = ["S101"]
