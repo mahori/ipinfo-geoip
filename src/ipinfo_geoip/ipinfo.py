@@ -12,7 +12,7 @@ class IPInfo(UserDict[str, dict[str, str] | None]):
     """IPアドレスからネットワーク, AS番号, 国, 組織を取得するメインクラス."""
 
     def __init__(self) -> None:
-        """IPInfoを初期化する."""
+        """IPInfoインスタンスを初期化する."""
         super().__init__()
 
         self.geoip = GeoIPClient()
@@ -33,12 +33,9 @@ class IPInfo(UserDict[str, dict[str, str] | None]):
             見つからない場合はNone
 
         Raises:
-            TypeError: ip_addressが文字列でない場合
+            ValidationError: ip_addressが不正な場合
 
         """
-        if not isinstance(ip_address, str):
-            raise TypeError
-
         try:
             _ = ipaddress.ip_address(ip_address)
         except ValueError as e:
