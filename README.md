@@ -7,7 +7,7 @@
 [![CodeQL](https://github.com/mahori/ipinfo-geoip/actions/workflows/codeql.yml/badge.svg)](https://github.com/mahori/ipinfo-geoip/actions/workflows/codeql.yml)
 [![codecov](https://codecov.io/gh/mahori/ipinfo-geoip/graph/badge.svg?token=70GXGLS97X)](https://codecov.io/gh/mahori/ipinfo-geoip)
 
-IPアドレスからネットワーク，AS番号，国，組織を取得するPythonパッケージ
+IPアドレスからIPネットワーク，AS番号，国コード，組織を取得するPythonパッケージ
 
 MaxMind社GeoLite Web Serviceを使用してIPアドレス情報を取得し，Redisでキャッシュ機能を提供します．
 
@@ -42,13 +42,13 @@ import json
 # IPInfoインスタンスを作成
 ipinfo = IPInfo()
 
-# IPアドレスからネットワーク，AS番号，国，組織を取得
+# IPアドレスからIPネットワーク，AS番号，国コード，組織を取得
 result = ipinfo["192.0.2.1"]
 
 # 結果を表示
-print(f"国: {result['country']}")
+print(f"国コード: {result['country']}")
 print(f"AS番号: {result['as_number']}")
-print(f"ネットワーク: {result['network']}")
+print(f"IPネットワーク: {result['network']}")
 
 # またはJSON文字列として表示
 print(json.dumps(result))
@@ -69,11 +69,7 @@ print(json.dumps(result))
 ## 例外処理
 
 ```python
-from ipinfo_geoip import IPInfo
-from ipinfo_geoip.exceptions import (
-    ConfigurationError,
-    IPInfoError
-)
+from ipinfo_geoip import IPInfo, IPInfoError, ConfigurationError
 
 try:
     ipinfo = IPInfo()
