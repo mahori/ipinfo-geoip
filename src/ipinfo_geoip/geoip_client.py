@@ -16,7 +16,7 @@ class GeoIPClient(UserDict[str, IPData | None]):
     """GeoLite2 Web Serviceクライアント."""
 
     def __init__(self) -> None:
-        """GeoLite2 Web Serviceクライアントを初期化する.
+        """GeoIPClientインスタンスを初期化する.
 
         Raises:
             ConfigurationError: 必要な認証情報が不足している場合
@@ -29,26 +29,24 @@ class GeoIPClient(UserDict[str, IPData | None]):
         except ValidationError as e:
             msg = "GeoIP configuration error"
             raise ConfigurationError(msg, {"error": str(e)}) from e
+
         self.client = geoip2.webservice.Client(config.account_id, config.license_key, config.host)
 
     def __missing__(self, ip_address: str) -> IPData | None:
-        """指定されたGeoIP情報を取得する.
+        """指定されたIPアドレス情報を取得する.
 
         Args:
             ip_address: 検索するIPアドレス
 
         Returns:
-            GeoIP情報
+            GeoLite2 Web Serviceから取得したIPアドレス情報
             見つからない場合はNone
 
         Raises:
-            TypeError: ip_addressが文字列でない場合
             GeoIPClientError: GeoLite2 Web Serviceでエラーが発生した場合
+            ValidationError: ip_addressが不正な場合
 
         """
-        if not isinstance(ip_address, str):
-            raise TypeError
-
         try:
             _ = ipaddress.ip_address(ip_address)
         except ValueError as e:
