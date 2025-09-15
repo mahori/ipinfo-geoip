@@ -1,19 +1,18 @@
 """IPDataクラスのテスト."""
 
-from typing import Final
-
 import pytest
 
 from ipinfo_geoip.constants import AS_NUMBER_MAX, AS_NUMBER_MIN, COUNTRY_CODE_LENGTH
 from ipinfo_geoip.exceptions import ValidationError
 from ipinfo_geoip.ipdata import IPData
-
-TEST_IP_ADDRESS_1: Final[str] = "192.0.2.1"
-TEST_IP_ADDRESS_2: Final[str] = "192.0.2.2"
-TEST_IP_NETWORK: Final[str] = "192.0.2.0/24"
-TEST_AS_NUMBER: Final[str] = "65001"
-TEST_COUNTRY_CODE: Final[str] = "US"
-TEST_ORGANIZATION: Final[str] = "Test Organization"
+from tests.conftest import (
+    TEST_AS_NUMBER_STR,
+    TEST_COUNTRY_CODE,
+    TEST_IP_ADDRESS_1,
+    TEST_IP_ADDRESS_2,
+    TEST_IP_NETWORK,
+    TEST_ORGANIZATION,
+)
 
 
 class TestIPData:
@@ -24,14 +23,14 @@ class TestIPData:
         ip_data = IPData(
             ip_address=TEST_IP_ADDRESS_1,
             network=TEST_IP_NETWORK,
-            as_number=TEST_AS_NUMBER,
+            as_number=TEST_AS_NUMBER_STR,
             country=TEST_COUNTRY_CODE,
             organization=TEST_ORGANIZATION,
         )
 
         assert ip_data.ip_address == TEST_IP_ADDRESS_1
         assert ip_data.network == TEST_IP_NETWORK
-        assert ip_data.as_number == TEST_AS_NUMBER
+        assert ip_data.as_number == TEST_AS_NUMBER_STR
         assert ip_data.country == TEST_COUNTRY_CODE
         assert ip_data.organization == TEST_ORGANIZATION
 
@@ -40,7 +39,7 @@ class TestIPData:
         ip_data1 = IPData(
             ip_address=TEST_IP_ADDRESS_1,
             network=TEST_IP_NETWORK,
-            as_number=TEST_AS_NUMBER,
+            as_number=TEST_AS_NUMBER_STR,
             country=TEST_COUNTRY_CODE,
             organization=TEST_ORGANIZATION,
         )
@@ -48,7 +47,7 @@ class TestIPData:
         ip_data2 = IPData(
             ip_address=TEST_IP_ADDRESS_1,
             network=TEST_IP_NETWORK,
-            as_number=TEST_AS_NUMBER,
+            as_number=TEST_AS_NUMBER_STR,
             country=TEST_COUNTRY_CODE,
             organization=TEST_ORGANIZATION,
         )
@@ -60,7 +59,7 @@ class TestIPData:
         ip_data1 = IPData(
             ip_address=TEST_IP_ADDRESS_1,
             network=TEST_IP_NETWORK,
-            as_number=TEST_AS_NUMBER,
+            as_number=TEST_AS_NUMBER_STR,
             country=TEST_COUNTRY_CODE,
             organization=TEST_ORGANIZATION,
         )
@@ -68,7 +67,7 @@ class TestIPData:
         ip_data2 = IPData(
             ip_address=TEST_IP_ADDRESS_2,
             network=TEST_IP_NETWORK,
-            as_number=TEST_AS_NUMBER,
+            as_number=TEST_AS_NUMBER_STR,
             country=TEST_COUNTRY_CODE,
             organization=TEST_ORGANIZATION,
         )
@@ -80,7 +79,7 @@ class TestIPData:
         ip_data = IPData(
             ip_address=TEST_IP_ADDRESS_1,
             network=TEST_IP_NETWORK,
-            as_number=TEST_AS_NUMBER,
+            as_number=TEST_AS_NUMBER_STR,
             country=TEST_COUNTRY_CODE,
             organization=TEST_ORGANIZATION,
         )
@@ -90,7 +89,7 @@ class TestIPData:
         assert "IPData" in repr_str
         assert TEST_IP_ADDRESS_1 in repr_str
         assert TEST_IP_NETWORK in repr_str
-        assert TEST_AS_NUMBER in repr_str
+        assert TEST_AS_NUMBER_STR in repr_str
         assert TEST_COUNTRY_CODE in repr_str
         assert TEST_ORGANIZATION in repr_str
 
@@ -101,7 +100,7 @@ class TestIPData:
             _ = IPData(
                 ip_address="invalid_ip",
                 network=TEST_IP_NETWORK,
-                as_number=TEST_AS_NUMBER,
+                as_number=TEST_AS_NUMBER_STR,
                 country=TEST_COUNTRY_CODE,
                 organization=TEST_ORGANIZATION,
             )
@@ -113,7 +112,7 @@ class TestIPData:
             _ = IPData(
                 ip_address=TEST_IP_ADDRESS_1,
                 network="invalid.network",
-                as_number=TEST_AS_NUMBER,
+                as_number=TEST_AS_NUMBER_STR,
                 country=TEST_COUNTRY_CODE,
                 organization=TEST_ORGANIZATION,
             )
@@ -151,7 +150,7 @@ class TestIPData:
             _ = IPData(
                 ip_address=TEST_IP_ADDRESS_1,
                 network=TEST_IP_NETWORK,
-                as_number=TEST_AS_NUMBER,
+                as_number=TEST_AS_NUMBER_STR,
                 country=country_code,
                 organization=TEST_ORGANIZATION,
             )
@@ -161,7 +160,7 @@ class TestIPData:
         ip_data = IPData(
             ip_address=TEST_IP_ADDRESS_1,
             network=TEST_IP_NETWORK,
-            as_number=TEST_AS_NUMBER,
+            as_number=TEST_AS_NUMBER_STR,
             country=TEST_COUNTRY_CODE,
             organization=TEST_ORGANIZATION,
         )
@@ -173,7 +172,7 @@ class TestIPData:
         ip_data = IPData(
             ip_address=TEST_IP_ADDRESS_1,
             network="",
-            as_number=TEST_AS_NUMBER,
+            as_number=TEST_AS_NUMBER_STR,
             country=TEST_COUNTRY_CODE,
             organization=TEST_ORGANIZATION,
         )
@@ -197,7 +196,7 @@ class TestIPData:
         ip_data = IPData(
             ip_address=TEST_IP_ADDRESS_1,
             network=TEST_IP_NETWORK,
-            as_number=TEST_AS_NUMBER,
+            as_number=TEST_AS_NUMBER_STR,
             country="",
             organization=TEST_ORGANIZATION,
         )
@@ -209,7 +208,7 @@ class TestIPData:
         ip_data = IPData(
             ip_address=TEST_IP_ADDRESS_1,
             network=TEST_IP_NETWORK,
-            as_number=TEST_AS_NUMBER,
+            as_number=TEST_AS_NUMBER_STR,
             country=TEST_COUNTRY_CODE,
             organization="",
         )
@@ -233,7 +232,7 @@ class TestIPData:
         ip_data = IPData(
             ip_address=TEST_IP_ADDRESS_1,
             network=TEST_IP_NETWORK,
-            as_number=TEST_AS_NUMBER,
+            as_number=TEST_AS_NUMBER_STR,
             country=TEST_COUNTRY_CODE,
             organization=TEST_ORGANIZATION,
         )
@@ -241,7 +240,7 @@ class TestIPData:
         expected = {
             "ip_address": TEST_IP_ADDRESS_1,
             "network": TEST_IP_NETWORK,
-            "as_number": TEST_AS_NUMBER,
+            "as_number": TEST_AS_NUMBER_STR,
             "country": TEST_COUNTRY_CODE,
             "organization": TEST_ORGANIZATION,
         }

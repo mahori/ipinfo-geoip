@@ -2,7 +2,6 @@
 
 from collections import UserDict
 from ipaddress import IPv4Network
-from typing import Final
 from unittest.mock import Mock, patch
 
 import geoip2.errors
@@ -11,19 +10,18 @@ import pytest
 from ipinfo_geoip.exceptions import ConfigurationError, GeoIPClientError, ValidationError
 from ipinfo_geoip.geoip_client import GeoIPClient
 from ipinfo_geoip.ipdata import IPData
-
-TEST_GEOIP_ACCOUNT_ID: Final[int] = 12345
-TEST_GEOIP_LICENSE_KEY: Final[str] = "license_key"
-TEST_GEOIP_HOST: Final[str] = "geolite.info"
-
-TEST_IP_ADDRESS: Final[str] = "192.0.2.1"
-TEST_IP_NETWORK: Final[str] = "192.0.2.0/24"
-TEST_AS_NUMBER_INT: Final[int] = 65001
-TEST_AS_NUMBER_STR: Final[str] = "65001"
-TEST_COUNTRY_CODE: Final[str] = "US"
-TEST_ORGANIZATION: Final[str] = "Test Organization"
-
-TEST_IPADDRESS_INVALID_: Final[str] = "12345"
+from tests.conftest import (
+    TEST_AS_NUMBER_INT,
+    TEST_AS_NUMBER_STR,
+    TEST_COUNTRY_CODE,
+    TEST_GEOIP_ACCOUNT_ID_INT,
+    TEST_GEOIP_HOST,
+    TEST_GEOIP_LICENSE_KEY,
+    TEST_IP_ADDRESS_1,
+    TEST_IP_NETWORK,
+    TEST_IPADDRESS_INVALID_,
+    TEST_ORGANIZATION,
+)
 
 
 class TestGeoIPClient:
@@ -35,7 +33,7 @@ class TestGeoIPClient:
         """初期化のテスト."""
         # モック設定
         mock_config = Mock()
-        mock_config.account_id = TEST_GEOIP_ACCOUNT_ID
+        mock_config.account_id = TEST_GEOIP_ACCOUNT_ID_INT
         mock_config.license_key = TEST_GEOIP_LICENSE_KEY
         mock_config.host = TEST_GEOIP_HOST
         mock_from_env.return_value = mock_config
@@ -47,7 +45,7 @@ class TestGeoIPClient:
         assert isinstance(client, GeoIPClient)
         assert isinstance(client, UserDict)
         mock_from_env.assert_called_once()
-        mock_client.assert_called_once_with(TEST_GEOIP_ACCOUNT_ID, TEST_GEOIP_LICENSE_KEY, TEST_GEOIP_HOST)
+        mock_client.assert_called_once_with(TEST_GEOIP_ACCOUNT_ID_INT, TEST_GEOIP_LICENSE_KEY, TEST_GEOIP_HOST)
 
     @patch("ipinfo_geoip.geoip_client.GeoIPConfig.from_env")
     def test_init_with_configuration_error(self, mock_from_env: Mock) -> None:
@@ -103,16 +101,16 @@ class TestGeoIPClient:
 
         # テスト実行
         client = GeoIPClient()
-        result = client[TEST_IP_ADDRESS]
+        result = client[TEST_IP_ADDRESS_1]
 
         # 検証
         assert isinstance(result, IPData)
-        assert result.ip_address == TEST_IP_ADDRESS
+        assert result.ip_address == TEST_IP_ADDRESS_1
         assert result.network == TEST_IP_NETWORK
         assert result.as_number == TEST_AS_NUMBER_STR
         assert result.country == TEST_COUNTRY_CODE
         assert result.organization == TEST_ORGANIZATION
-        mock_client_instance.city.assert_called_once_with(TEST_IP_ADDRESS)
+        mock_client_instance.city.assert_called_once_with(TEST_IP_ADDRESS_1)
 
     @patch("ipinfo_geoip.geoip_client.geoip2.webservice.Client")
     @patch("ipinfo_geoip.geoip_client.GeoIPConfig.from_env")
@@ -130,10 +128,10 @@ class TestGeoIPClient:
         client = GeoIPClient()
 
         with pytest.raises(GeoIPClientError):
-            _ = client[TEST_IP_ADDRESS]
+            _ = client[TEST_IP_ADDRESS_1]
 
         # 検証
-        mock_client_instance.city.assert_called_once_with(TEST_IP_ADDRESS)
+        mock_client_instance.city.assert_called_once_with(TEST_IP_ADDRESS_1)
 
     @patch("ipinfo_geoip.geoip_client.geoip2.webservice.Client")
     @patch("ipinfo_geoip.geoip_client.GeoIPConfig.from_env")
@@ -149,11 +147,11 @@ class TestGeoIPClient:
 
         # テスト実行
         client = GeoIPClient()
-        result = client[TEST_IP_ADDRESS]
+        result = client[TEST_IP_ADDRESS_1]
 
         # 検証
         assert result is None
-        mock_client_instance.city.assert_called_once_with(TEST_IP_ADDRESS)
+        mock_client_instance.city.assert_called_once_with(TEST_IP_ADDRESS_1)
 
     @patch("ipinfo_geoip.geoip_client.geoip2.webservice.Client")
     @patch("ipinfo_geoip.geoip_client.GeoIPConfig.from_env")
@@ -175,8 +173,8 @@ class TestGeoIPClient:
 
         # テスト実行
         client = GeoIPClient()
-        result = client[TEST_IP_ADDRESS]
+        result = client[TEST_IP_ADDRESS_1]
 
         # 検証
         assert result is None
-        mock_client_instance.city.assert_called_once_with(TEST_IP_ADDRESS)
+        mock_client_instance.city.assert_called_once_with(TEST_IP_ADDRESS_1)

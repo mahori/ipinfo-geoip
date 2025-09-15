@@ -1,7 +1,5 @@
 """例外クラスのテスト."""
 
-from typing import Any, Final
-
 import pytest
 
 from ipinfo_geoip.exceptions import (
@@ -11,9 +9,7 @@ from ipinfo_geoip.exceptions import (
     RedisClientError,
     ValidationError,
 )
-
-TEST_EXCEPTION_MESSAGE: Final[str] = "テストエラー"
-TEST_EXCEPTION_DETAILS: Final[dict[str, Any]] = {"ip_address": "192.0.2.1", "code": 500}
+from tests.conftest import TEST_EXCEPTION_DETAILS, TEST_EXCEPTION_MESSAGE
 
 
 class TestErrorInheritance:

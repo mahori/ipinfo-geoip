@@ -1,7 +1,6 @@
 """GeoIPConfigクラスのテスト."""
 
 import os
-from typing import Final
 from unittest.mock import patch
 
 import pytest
@@ -9,11 +8,7 @@ import pytest
 from ipinfo_geoip.constants import GEOIP_ACCOUNT_ID_ENV, GEOIP_HOST_ENV, GEOIP_LICENSE_KEY_ENV
 from ipinfo_geoip.exceptions import ValidationError
 from ipinfo_geoip.geoip_config import GeoIPConfig
-
-TEST_GEOIP_ACCOUNT_ID_INT: Final[int] = 12345
-TEST_GEOIP_ACCOUNT_ID_STR: Final[str] = "12345"
-TEST_GEOIP_LICENSE_KEY_STR: Final[str] = "license_key"
-TEST_GEOIP_HOST_STR: Final[str] = "geolite.info"
+from tests.conftest import TEST_GEOIP_ACCOUNT_ID_INT, TEST_GEOIP_ACCOUNT_ID_STR, TEST_GEOIP_HOST, TEST_GEOIP_LICENSE_KEY
 
 
 class TestGeoIPConfig:
@@ -21,18 +16,18 @@ class TestGeoIPConfig:
 
     def test_init(self) -> None:
         """初期化のテスト."""
-        config = GeoIPConfig(TEST_GEOIP_ACCOUNT_ID_STR, TEST_GEOIP_LICENSE_KEY_STR, TEST_GEOIP_HOST_STR)
+        config = GeoIPConfig(TEST_GEOIP_ACCOUNT_ID_STR, TEST_GEOIP_LICENSE_KEY, TEST_GEOIP_HOST)
 
         assert config.account_id == TEST_GEOIP_ACCOUNT_ID_INT
-        assert config.license_key == TEST_GEOIP_LICENSE_KEY_STR
-        assert config.host == TEST_GEOIP_HOST_STR
+        assert config.license_key == TEST_GEOIP_LICENSE_KEY
+        assert config.host == TEST_GEOIP_HOST
 
     @patch.dict(
         os.environ,
         {
             GEOIP_ACCOUNT_ID_ENV: TEST_GEOIP_ACCOUNT_ID_STR,
-            GEOIP_LICENSE_KEY_ENV: TEST_GEOIP_LICENSE_KEY_STR,
-            GEOIP_HOST_ENV: TEST_GEOIP_HOST_STR,
+            GEOIP_LICENSE_KEY_ENV: TEST_GEOIP_LICENSE_KEY,
+            GEOIP_HOST_ENV: TEST_GEOIP_HOST,
         },
         clear=True,
     )
@@ -41,14 +36,14 @@ class TestGeoIPConfig:
         config = GeoIPConfig.from_env()
 
         assert config.account_id == TEST_GEOIP_ACCOUNT_ID_INT
-        assert config.license_key == TEST_GEOIP_LICENSE_KEY_STR
-        assert config.host == TEST_GEOIP_HOST_STR
+        assert config.license_key == TEST_GEOIP_LICENSE_KEY
+        assert config.host == TEST_GEOIP_HOST
 
     @patch.dict(
         os.environ,
         {
-            GEOIP_LICENSE_KEY_ENV: TEST_GEOIP_LICENSE_KEY_STR,
-            GEOIP_HOST_ENV: TEST_GEOIP_HOST_STR,
+            GEOIP_LICENSE_KEY_ENV: TEST_GEOIP_LICENSE_KEY,
+            GEOIP_HOST_ENV: TEST_GEOIP_HOST,
         },
         clear=True,
     )
@@ -62,7 +57,7 @@ class TestGeoIPConfig:
         os.environ,
         {
             GEOIP_ACCOUNT_ID_ENV: TEST_GEOIP_ACCOUNT_ID_STR,
-            GEOIP_HOST_ENV: TEST_GEOIP_HOST_STR,
+            GEOIP_HOST_ENV: TEST_GEOIP_HOST,
         },
         clear=True,
     )
@@ -76,7 +71,7 @@ class TestGeoIPConfig:
         os.environ,
         {
             GEOIP_ACCOUNT_ID_ENV: TEST_GEOIP_ACCOUNT_ID_STR,
-            GEOIP_LICENSE_KEY_ENV: TEST_GEOIP_LICENSE_KEY_STR,
+            GEOIP_LICENSE_KEY_ENV: TEST_GEOIP_LICENSE_KEY,
         },
         clear=True,
     )

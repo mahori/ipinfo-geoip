@@ -1,7 +1,6 @@
 """RedisClientクラスのテスト."""
 
 from collections import UserDict
-from typing import Final
 from unittest.mock import Mock, patch
 
 import pytest
@@ -10,29 +9,16 @@ import redis
 from ipinfo_geoip.exceptions import ConfigurationError, RedisClientError, ValidationError
 from ipinfo_geoip.ipdata import IPData
 from ipinfo_geoip.redis_client import RedisClient
-
-TEST_REDIS_URI: Final[str] = "redis://localhost:6379"
-TEST_REDIS_TTL: Final[int] = 3600
-
-TEST_IP_ADDRESS: Final[str] = "192.0.2.1"
-TEST_IP_NETWORK: Final[str] = "192.0.2.0/24"
-TEST_AS_NUMBER: Final[str] = "65001"
-TEST_COUNTRY_CODE: Final[str] = "US"
-TEST_ORGANIZATION: Final[str] = "Test Organization"
-
-TEST_IPDATA: Final[IPData] = IPData(
-    ip_address=TEST_IP_ADDRESS,
-    network=TEST_IP_NETWORK,
-    as_number=TEST_AS_NUMBER,
-    country=TEST_COUNTRY_CODE,
-    organization=TEST_ORGANIZATION,
-)
-TEST_IPDATA_INCOMPLETE: Final[IPData] = IPData(
-    ip_address=TEST_IP_ADDRESS,
-    as_number=TEST_AS_NUMBER,
-    network="",
-    country=TEST_COUNTRY_CODE,
-    organization=TEST_ORGANIZATION,
+from tests.conftest import (
+    TEST_AS_NUMBER_STR,
+    TEST_COUNTRY_CODE,
+    TEST_IP_ADDRESS_1,
+    TEST_IP_NETWORK,
+    TEST_IPDATA,
+    TEST_IPDATA_INCOMPLETE,
+    TEST_ORGANIZATION,
+    TEST_REDIS_TTL_INT,
+    TEST_REDIS_URI,
 )
 
 
@@ -46,7 +32,7 @@ class TestRedisClient:
         # モック設定
         mock_config = Mock()
         mock_config.uri = TEST_REDIS_URI
-        mock_config.ttl = TEST_REDIS_TTL
+        mock_config.ttl = TEST_REDIS_TTL_INT
         mock_from_env.return_value = mock_config
 
         mock_redis_instance = Mock()
@@ -109,16 +95,16 @@ class TestRedisClient:
 
         # テスト実行
         client = RedisClient()
-        result = client[TEST_IP_ADDRESS]
+        result = client[TEST_IP_ADDRESS_1]
 
         # 検証
         assert isinstance(result, IPData)
-        assert result.ip_address == TEST_IP_ADDRESS
+        assert result.ip_address == TEST_IP_ADDRESS_1
         assert result.network == TEST_IP_NETWORK
-        assert result.as_number == TEST_AS_NUMBER
+        assert result.as_number == TEST_AS_NUMBER_STR
         assert result.country == TEST_COUNTRY_CODE
         assert result.organization == TEST_ORGANIZATION
-        mock_redis_instance.hgetall.assert_called_once_with(f"ipinfo:{TEST_IP_ADDRESS}")
+        mock_redis_instance.hgetall.assert_called_once_with(f"ipinfo:{TEST_IP_ADDRESS_1}")
 
     @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
     @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")
@@ -136,10 +122,10 @@ class TestRedisClient:
         client = RedisClient()
 
         with pytest.raises(RedisClientError):
-            _ = client[TEST_IP_ADDRESS]
+            _ = client[TEST_IP_ADDRESS_1]
 
         # 検証
-        mock_redis_instance.hgetall.assert_called_once_with(f"ipinfo:{TEST_IP_ADDRESS}")
+        mock_redis_instance.hgetall.assert_called_once_with(f"ipinfo:{TEST_IP_ADDRESS_1}")
 
     @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
     @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")
@@ -155,11 +141,11 @@ class TestRedisClient:
 
         # テスト実行
         client = RedisClient()
-        result = client[TEST_IP_ADDRESS]
+        result = client[TEST_IP_ADDRESS_1]
 
         # 検証
         assert result is None
-        mock_redis_instance.hgetall.assert_called_once_with(f"ipinfo:{TEST_IP_ADDRESS}")
+        mock_redis_instance.hgetall.assert_called_once_with(f"ipinfo:{TEST_IP_ADDRESS_1}")
 
     @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
     @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")
@@ -175,11 +161,11 @@ class TestRedisClient:
 
         # テスト実行
         client = RedisClient()
-        result = client[TEST_IP_ADDRESS]
+        result = client[TEST_IP_ADDRESS_1]
 
         # 検証
         assert result is None
-        mock_redis_instance.hgetall.assert_called_once_with(f"ipinfo:{TEST_IP_ADDRESS}")
+        mock_redis_instance.hgetall.assert_called_once_with(f"ipinfo:{TEST_IP_ADDRESS_1}")
 
     @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
     @patch("ipinfo_geoip.redis_client.RedisConfig.from_env")
@@ -216,7 +202,7 @@ class TestRedisClient:
         """成功時の__setitem__メソッドテスト."""
         # モック設定
         mock_config = Mock()
-        mock_config.ttl = TEST_REDIS_TTL
+        mock_config.ttl = TEST_REDIS_TTL_INT
         mock_from_env.return_value = mock_config
 
         mock_redis_pipeline = Mock()
@@ -230,12 +216,12 @@ class TestRedisClient:
 
         # テスト実行
         client = RedisClient()
-        client[TEST_IP_ADDRESS] = TEST_IPDATA
+        client[TEST_IP_ADDRESS_1] = TEST_IPDATA
 
         # 検証
         mock_redis_instance.pipeline.assert_called_once()
-        mock_redis_pipeline.hset.assert_called_once_with(f"ipinfo:{TEST_IP_ADDRESS}", mapping=TEST_IPDATA.to_dict())
-        mock_redis_pipeline.expire.assert_called_once_with(f"ipinfo:{TEST_IP_ADDRESS}", TEST_REDIS_TTL)
+        mock_redis_pipeline.hset.assert_called_once_with(f"ipinfo:{TEST_IP_ADDRESS_1}", mapping=TEST_IPDATA.to_dict())
+        mock_redis_pipeline.expire.assert_called_once_with(f"ipinfo:{TEST_IP_ADDRESS_1}", TEST_REDIS_TTL_INT)
         mock_redis_pipeline.execute.assert_called_once()
 
     @patch("ipinfo_geoip.redis_client.redis.Redis.from_url")
@@ -257,7 +243,7 @@ class TestRedisClient:
 
         # テスト実行
         client = RedisClient()
-        client[TEST_IP_ADDRESS] = TEST_IPDATA_INCOMPLETE
+        client[TEST_IP_ADDRESS_1] = TEST_IPDATA_INCOMPLETE
 
         # 検証
         mock_redis_instance.pipeline.assert_not_called()
@@ -284,7 +270,7 @@ class TestRedisClient:
 
         # テスト実行
         client = RedisClient()
-        client[TEST_IP_ADDRESS] = None
+        client[TEST_IP_ADDRESS_1] = None
 
         # 検証
         mock_redis_instance.pipeline.assert_not_called()
