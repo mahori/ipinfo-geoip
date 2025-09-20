@@ -9,7 +9,7 @@ from .exceptions import (
 )
 from .ipinfo import IPInfo
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 __author__ = "mahori"
 __email__ = "4198737+mahori@users.noreply.github.com"
 

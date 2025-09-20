@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ipinfo-geoip"
-version = "0.0.1"
+version = "0.0.2"
 description = "Python module to retrieve IP network, AS number, country code, and organization from IP address"
 readme = "README.md"
 requires-python = ">=3.11"
